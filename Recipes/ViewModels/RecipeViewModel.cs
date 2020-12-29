@@ -9,7 +9,7 @@ namespace Recipes.ViewModels
 {
     public class RecipeViewModel
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         [Required]       
         public string Name { get; set; }
         [Required]

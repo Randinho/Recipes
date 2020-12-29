@@ -1,0 +1,9 @@
+﻿@model int
+
+<div class="text-center">
+    <form asp-action="Share" method="post" asp-route-id="@Model">
+        <label class="control-label">Email of the user you want to share recipe</label>
+        <input type="text" name="email" class="form-control" />
+        <button type="submit" class="btn btn-primary">Share</button>
+    </form>
+</div>

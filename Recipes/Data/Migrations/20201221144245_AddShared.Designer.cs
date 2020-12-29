@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Recipes.Data;
 
 namespace Recipes.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201221144245_AddShared")]
+    partial class AddShared
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -272,32 +274,6 @@ namespace Recipes.Data.Migrations
                     b.ToTable("Ingredients");
                 });
 
-            modelBuilder.Entity("Recipes.Models.Notification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsReceived")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Message")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ReceiverId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.ToTable("Notifications");
-                });
-
             modelBuilder.Entity("Recipes.Models.Recipe", b =>
                 {
                     b.Property<int>("Id")
@@ -454,15 +430,6 @@ namespace Recipes.Data.Migrations
                     b.Navigation("Recipe");
                 });
 
-            modelBuilder.Entity("Recipes.Models.Notification", b =>
-                {
-                    b.HasOne("Recipes.Models.ApplicationUser", "Receiver")
-                        .WithMany("Notifications")
-                        .HasForeignKey("ReceiverId");
-
-                    b.Navigation("Receiver");
-                });
-
             modelBuilder.Entity("Recipes.Models.Recipe", b =>
                 {
                     b.HasOne("Recipes.Models.ApplicationUser", "ApplicationUser")
@@ -540,8 +507,6 @@ namespace Recipes.Data.Migrations
             modelBuilder.Entity("Recipes.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Favorites");
-
-                    b.Navigation("Notifications");
 
                     b.Navigation("Recipes");
 

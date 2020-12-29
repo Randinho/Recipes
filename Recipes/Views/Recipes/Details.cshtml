@@ -1,42 +1,48 @@
 ﻿@model Recipes.Models.Recipe
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
 
 @{
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>@Model.Name</h1>
 
 <div>
-    <h4>Recipe</h4>
+    <h3>@Model.Category.Name</h3>
+    <hr /> 
+    <h5>Created by: @Model.ApplicationUser.Email</h5>
+    <div class="row">
+        <div class="col-sm">
+            <img src="~/images/@Model.Picture" class="img-thumbnail rounded float-sm-left" height="300" width="300" alt="recipePic" asp-append-version="true" />
+        </div>
+        <div class="col-sm-6">
+            <h3>Ingredients:</h3>
+            @foreach(var item in ViewBag.Ingredients)
+            {
+                <p>@item.Ingredient.Name - @item.Amount</p>
+            }
+        </div>
+    </div>  
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsPrivate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsPrivate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Category.Name)
-        </dd>
-    </dl>
+    <div class="row">
+        <div class="col-sm">
+            @Model.Description
+        </div>  
+    </div>
 </div>
+
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        if (ViewBag.IsFavorite == true)
+        {
+            <a asp-action="Index" asp-controller="Favorite">Go to favorites</a>
+        }
+        else
+        {
+            <a asp-action="AddToFavorites" asp-controller="Favorite" asp-route-id="@Model.Id">Add to favorites</a>
+        }
+    }
+    <a href="javascript:history.go(-1)">Back</a>
 </div>

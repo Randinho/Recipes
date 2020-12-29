@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Recipes.Data;
 
 namespace Recipes.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201218104844_AddFavorites")]
+    partial class AddFavorites
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -256,48 +258,6 @@ namespace Recipes.Data.Migrations
                     b.ToTable("Favorites");
                 });
 
-            modelBuilder.Entity("Recipes.Models.Ingredient", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Ingredients");
-                });
-
-            modelBuilder.Entity("Recipes.Models.Notification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsReceived")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Message")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ReceiverId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.ToTable("Notifications");
-                });
-
             modelBuilder.Entity("Recipes.Models.Recipe", b =>
                 {
                     b.Property<int>("Id")
@@ -333,42 +293,6 @@ namespace Recipes.Data.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Recipes");
-                });
-
-            modelBuilder.Entity("Recipes.Models.RecipeIngredients", b =>
-                {
-                    b.Property<int>("RecipeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("IngredientId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Amount")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("RecipeId", "IngredientId");
-
-                    b.HasIndex("IngredientId");
-
-                    b.ToTable("RecipeIngredients");
-                });
-
-            modelBuilder.Entity("Recipes.Models.Shared", b =>
-                {
-                    b.Property<int>("RecipeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("Confirmed")
-                        .HasColumnType("bit");
-
-                    b.HasKey("RecipeId", "ApplicationUserId");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.ToTable("Shared");
                 });
 
             modelBuilder.Entity("Recipes.Models.ApplicationUser", b =>
@@ -454,15 +378,6 @@ namespace Recipes.Data.Migrations
                     b.Navigation("Recipe");
                 });
 
-            modelBuilder.Entity("Recipes.Models.Notification", b =>
-                {
-                    b.HasOne("Recipes.Models.ApplicationUser", "Receiver")
-                        .WithMany("Notifications")
-                        .HasForeignKey("ReceiverId");
-
-                    b.Navigation("Receiver");
-                });
-
             modelBuilder.Entity("Recipes.Models.Recipe", b =>
                 {
                     b.HasOne("Recipes.Models.ApplicationUser", "ApplicationUser")
@@ -480,72 +395,21 @@ namespace Recipes.Data.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("Recipes.Models.RecipeIngredients", b =>
-                {
-                    b.HasOne("Recipes.Models.Ingredient", "Ingredient")
-                        .WithMany("RecipeIngredients")
-                        .HasForeignKey("IngredientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Recipes.Models.Recipe", "Recipe")
-                        .WithMany("RecipeIngredients")
-                        .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Ingredient");
-
-                    b.Navigation("Recipe");
-                });
-
-            modelBuilder.Entity("Recipes.Models.Shared", b =>
-                {
-                    b.HasOne("Recipes.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany("Shared")
-                        .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Recipes.Models.Recipe", "Recipe")
-                        .WithMany("Shared")
-                        .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("Recipe");
-                });
-
             modelBuilder.Entity("Recipes.Models.Category", b =>
                 {
                     b.Navigation("Recipes");
                 });
 
-            modelBuilder.Entity("Recipes.Models.Ingredient", b =>
-                {
-                    b.Navigation("RecipeIngredients");
-                });
-
             modelBuilder.Entity("Recipes.Models.Recipe", b =>
                 {
                     b.Navigation("Favorites");
-
-                    b.Navigation("RecipeIngredients");
-
-                    b.Navigation("Shared");
                 });
 
             modelBuilder.Entity("Recipes.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Favorites");
 
-                    b.Navigation("Notifications");
-
                     b.Navigation("Recipes");
-
-                    b.Navigation("Shared");
                 });
 #pragma warning restore 612, 618
         }

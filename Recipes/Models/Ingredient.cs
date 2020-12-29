@@ -7,18 +7,16 @@ using System.Threading.Tasks;
 
 namespace Recipes.Models
 {
-    public class Category
+    public class Ingredient
     {
         public int Id { get; set; }
         [Required]
-        [Display(Name = "Category")]
         public string Name { get; set; }
-        public ICollection<Recipe> Recipes { get; set; }
+        public ICollection<RecipeIngredients> RecipeIngredients { get; set; }
 
-
-        public Category()
+        public Ingredient()
         {
-            Recipes = new Collection<Recipe>();
+            RecipeIngredients = new Collection<RecipeIngredients>();
         }
     }
 }

@@ -4,6 +4,11 @@
     ViewData["Title"] = "Edit";
 }
 
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 <h1>Edit</h1>
 
 <h4>Recipe</h4>
@@ -31,7 +36,6 @@
             <div class="form-group">
                 <label asp-for="CategoryId"></label>
                 <select asp-for="CategoryId" asp-items="@(new SelectList(ViewBag.Categories, "Id", "Name"))">
-
                 </select>
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
@@ -40,12 +44,37 @@
             </div>
         </form>
     </div>
+
+    <div class="col-md-auto">
+        <div class="text-center">
+            <h3>Ingredients:</h3>
+            @foreach(var item in ViewBag.Ingredients)
+            {
+                <p>@item.Ingredient.Name - @item.Amount <a class="btn" asp-route-ingredientId="@item.IngredientId" asp-route-recipeId="@Model.Id" asp-action="Delete" asp-controller="Ingredient">X</a></p>
+            }
+            <form asp-controller="Ingredient" asp-action="AddIngredient" asp-route-recipeId="@Model.Id" method="post">
+                <label for="ingredientName" class="control-label">Type in name of ingredient, if there is no item that you need, it will be added.</label>
+                <input type="text" id="ingredientName" name="ingredientName" placeholder="Input your keyword" class="form-control" />
+                <label for="amount" class="control-label">Type in the amount of chosen ingredient.</label>
+                <input type="text" class="form-control" id="amount" name="amount" placeholder="eg. 3 szt."/>
+                <button class="btn btn-primary" type="submit">Add</button>
+            </form>
+        </div>
+        
+    </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<div>   
+    <a asp-action="UserRecipes">Go to my recipes</a>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+<script>
+        $('#ingredientName').autocomplete({
+            source: '@Url.Action("Source", "Ingredient")'
+        });
+   
+</script>

@@ -1,0 +1,31 @@
+﻿@model IEnumerable<Recipes.Models.Favorite>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Favorite recipes</h1>
+
+
+@foreach (var item in Model)
+{
+
+    <div class="recipe-item">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-4 nopadding recipe-item-pic">
+                    <img src="~/images/@item.Recipe.Picture"
+                         style="width: 100%;"
+                         asp-append-version="true" />
+                </div>
+                <div class="col-sm-8 recipe-item-container">
+                    <h3>@Html.DisplayFor(modelItem => item.Recipe.Name)</h3>
+                    <h5>@Html.DisplayFor(modelItem => item.Recipe.Category.Name)</h5>
+                    <p>Created by: @Html.DisplayFor(modelItem => item.Recipe.ApplicationUser.Email)</p>
+                    <a class="btn btn-primary rounded" asp-action="Details" asp-controller="Recipes" asp-route-id="@item.RecipeId">Details</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}

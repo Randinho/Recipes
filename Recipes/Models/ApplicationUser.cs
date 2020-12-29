@@ -13,10 +13,16 @@ namespace Recipes.Models
         public string LastName { get; set; }
 
         public ICollection<Recipe> Recipes { get; set; }
+        public ICollection<Favorite> Favorites { get; set; }
+        public ICollection<Shared> Shared { get; set; }
+        public ICollection<Notification> Notifications { get; set; }
 
         public ApplicationUser()
         {
             Recipes = new Collection<Recipe>();
+            Favorites = new Collection<Favorite>();
+            Shared = new Collection<Shared>();
+            Notifications = new Collection<Notification>();
         }
     }
 }

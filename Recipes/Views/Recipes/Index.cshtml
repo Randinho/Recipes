@@ -1,51 +1,94 @@
-﻿@model IEnumerable<Recipes.Models.Recipe>
+﻿@model PaginatedList<Recipes.Models.Recipe>
 
 @{
     ViewData["Title"] = "Index";
+
 }
 
-<h1>Index</h1>
+<h1>All recipes</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsPrivate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                <img src="~/images/@item.Picture"
-                     class="rounded-circle"
-                     height="40" width="40"
-                     asp-append-version="true" />
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsPrivate)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+<form asp-action="Index" method="get">
+    <div class="form col-sm-4">
+        <p>
+            <input type="text" class="box-shadow rounded" name="searchString" value="@ViewData["CurrentFilter"]" />
+            <input type="text" name="currentCategoryFilters" value="@ViewData["CurrentCategoryFilters"]" hidden />
+            <input type="submit" value="Search" class="btn btn-dark" />
+        </p>
+    </div>
+</form>
+<button class="btn btn-dark" onclick="toggleFilters()">Search by category</button>
+<div style="display: none;" id="filterForm">
+    <form asp-action="Index" method="get">
+        @foreach (var item in ViewBag.CategoryFilters)
+        {
+        <div style="padding: 2px;">
+            <input name="categoryFilters" type="checkbox" checked="@item.IsChecked" value="@item.Id" /> @item.Name
+        </div>
+        }
+        <input type="text" name="currentFilter" value="@ViewData["CurrentFilter"]" hidden />
+        <br />
+        <input type="submit" class="btn btn-primary" value="Filter" />
+    </form>
+</div>
+<hr />
+    
+        @foreach (var item in Model)
+        {
+            
+                <div class="recipe-item">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-4 nopadding recipe-item-pic">
+                                <img src="~/images/@item.Picture"
+                                     style="width: 100%;"
+                                     asp-append-version="true" />
+                            </div>
+                            <div class="col-sm-8 recipe-item-container">
+                                <h3>@Html.DisplayFor(modelItem => item.Name)</h3>
+                                <h5>@Html.DisplayFor(modelItem => item.Category.Name)</h5>
+                                <p>Created by: @Html.DisplayFor(modelItem => item.ApplicationUser.Email)</p>
+                                <a class="btn btn-primary rounded" asp-action="Details" asp-route-id="@item.Id">Details</a>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>   
+        }
+    
+<hr />
+
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
 }
-    </tbody>
-</table>
+
+<a asp-action="Index"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-currentCategoryFilters="@ViewData["CurrentCategoryFilters"]"
+   class="btn btn-primary @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   asp-route-currentCategoryFilters="@ViewData["CurrentCategoryFilters"]"
+   class="btn btn-primary @nextDisabled">
+    Next
+</a>
+
+<script>
+    function toggleFilters() {
+        var x = document.getElementById("filterForm");
+        if (x.style.display == "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+    }
+</script>
+
