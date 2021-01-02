@@ -6,10 +6,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Recipes.Data;
@@ -63,10 +61,7 @@ namespace Recipes.Controllers
             return filters;
 
         }
-
-        
-
-        // GET: Recipes
+            
         public IActionResult Index(int? pageNumber, string searchString, string currentFilter, List<int> categoryFilters, string currentCategoryFilters)
         {   
             if(currentCategoryFilters != null)
@@ -99,8 +94,7 @@ namespace Recipes.Controllers
 
             return View(PaginatedList<Recipe>.Create(recipes, pageNumber ?? 1, pageSize));
         }
-
-        // GET: Recipes/Details/5
+      
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -123,18 +117,14 @@ namespace Recipes.Controllers
             ViewBag.Ingredients = await context.RecipeIngredients.Include(x => x.Ingredient).Where(x => x.RecipeId == id).ToListAsync();
             return View(recipe);
         }
-
-        // GET: Recipes/Create
+      
         [Authorize]
         public async Task<IActionResult> Create()
         {
             ViewBag.Categories = await context.Categories.ToListAsync();
             return View();
         }
-
-        // POST: Recipes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(RecipeViewModel model)
@@ -177,8 +167,7 @@ namespace Recipes.Controllers
             logger.LogInformation("unique: " + uniqueFileName);
             return uniqueFileName;
         }
-
-        // GET: Recipes/Edit/5
+      
         [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -206,10 +195,7 @@ namespace Recipes.Controllers
             }
             
         }
-
-        // POST: Recipes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+      
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Recipe recipe)
@@ -247,8 +233,7 @@ namespace Recipes.Controllers
             }
             return View(recipe);
         }
-
-        // GET: Recipes/Delete/5
+      
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -268,12 +253,9 @@ namespace Recipes.Controllers
             else
             {
                 return RedirectToAction("PermissionDenied", "Home", new { message = "You are not supposed to be on this page." });
-            }
-
-            
+            }        
         }
-
-        // POST: Recipes/Delete/5
+    
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
