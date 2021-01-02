@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Recipes.Data;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace Recipes.Controllers
 {
+    [Authorize]
     public class ShareController : Controller
     {
         public ApplicationDbContext context { get; }
@@ -42,15 +44,30 @@ namespace Recipes.Controllers
         public async Task<IActionResult> Share(int id, string email)
         {
             var user = await context.ApplicationUsers.FirstOrDefaultAsync(x => x.Email == email);
-            context.Shared.Add(new Shared
+            if (!IsAlreadyShared(id, user.Id))
             {
-                RecipeId = id,
-                ApplicationUserId = user.Id,
-                Confirmed = true
-            });
-            notificationSender.SendNotification("You received a recipe. Check it out in 'shared with me' tab.", user.Id);
-            await context.SaveChangesAsync();
-            return RedirectToAction("UserRecipes", "Recipes");
+                context.Shared.Add(new Shared
+                {
+                    RecipeId = id,
+                    ApplicationUserId = user.Id,
+                    Confirmed = true
+                });
+                notificationSender.SendNotification("You received a recipe. Check it out in 'shared with me' tab.", user.Id);
+                await context.SaveChangesAsync();
+                return RedirectToAction("UserRecipes", "Recipes");
+            }
+            else
+            {
+                string message = "That recipe is already shared to chosen user.";
+                return RedirectToAction("PermissionDenied", "Home", new { message });
+            }
+        }
+
+        public bool IsAlreadyShared(int recipeId, string userId)
+        {
+            if (context.Shared.Any(x => x.ApplicationUserId == userId && x.RecipeId == recipeId))
+                return true;
+            return false;
         }
     }
 }

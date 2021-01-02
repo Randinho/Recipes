@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -124,6 +125,7 @@ namespace Recipes.Controllers
         }
 
         // GET: Recipes/Create
+        [Authorize]
         public async Task<IActionResult> Create()
         {
             ViewBag.Categories = await context.Categories.ToListAsync();
@@ -177,6 +179,7 @@ namespace Recipes.Controllers
         }
 
         // GET: Recipes/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -190,9 +193,18 @@ namespace Recipes.Controllers
             {
                 return NotFound();
             }
-            ViewBag.Ingredients = await context.RecipeIngredients.Include(x => x.Ingredient).Where(x => x.RecipeId == id).ToListAsync();
-            ViewBag.Categories = await context.Categories.ToListAsync();
-            return View(recipe);
+            if(IsRecipeBelongsToCurrentUser(recipe.Id))
+            {
+                ViewBag.Ingredients = await context.RecipeIngredients.Include(x => x.Ingredient).Where(x => x.RecipeId == id).ToListAsync();
+                ViewBag.Categories = await context.Categories.ToListAsync();
+                return View(recipe);
+            }
+            else
+            {
+                
+                return RedirectToAction("PermissionDenied", "Home", new { message = "You are not supposed to be on this page." });
+            }
+            
         }
 
         // POST: Recipes/Edit/5
@@ -250,8 +262,15 @@ namespace Recipes.Controllers
             {
                 return NotFound();
             }
+            if (IsRecipeBelongsToCurrentUser(recipe.Id)){
+                return View(recipe);
+            }
+            else
+            {
+                return RedirectToAction("PermissionDenied", "Home", new { message = "You are not supposed to be on this page." });
+            }
 
-            return View(recipe);
+            
         }
 
         // POST: Recipes/Delete/5
@@ -274,6 +293,15 @@ namespace Recipes.Controllers
         public async Task<IActionResult> UserRecipes()
         {
             return View(await context.Recipes.Include(x => x.Category).Where(x => x.ApplicationUserId == GetCurrentUserId()).ToListAsync());
+        }
+
+        public bool IsRecipeBelongsToCurrentUser(int recipeId)
+        {
+            var recipe = context.Recipes.FirstOrDefault(x => x.Id == recipeId);
+
+            if (recipe.ApplicationUserId == GetCurrentUserId())
+                return true;
+            return false;
         }
     }
 }

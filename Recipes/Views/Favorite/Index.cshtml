@@ -5,27 +5,28 @@
 }
 
 <h1>Favorite recipes</h1>
+<hr />
 
-
-@foreach (var item in Model)
+@for (int i = 0; i < Model.Count(); i++)
 {
-
-    <div class="recipe-item">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-4 nopadding recipe-item-pic">
-                    <img src="~/images/@item.Recipe.Picture"
-                         style="width: 100%;"
-                         asp-append-version="true" />
-                </div>
-                <div class="col-sm-8 recipe-item-container">
-                    <h3>@Html.DisplayFor(modelItem => item.Recipe.Name)</h3>
-                    <h5>@Html.DisplayFor(modelItem => item.Recipe.Category.Name)</h5>
-                    <p>Created by: @Html.DisplayFor(modelItem => item.Recipe.ApplicationUser.Email)</p>
-                    <a class="btn btn-primary rounded" asp-action="Details" asp-controller="Recipes" asp-route-id="@item.RecipeId">Details</a>
-
-                </div>
+    if (i % 3 == 0)
+    {
+        @:<div class="row justify-content-center">
+        }
+        <div class="col-sm-3 nopadding recipe-item">
+            <img src="~/images/@Model.ElementAt(i).Recipe.Picture"
+                 style="width: 100%; height: 200px;"
+                 class="recipe-item-pic"
+                 asp-append-version="true" />
+            <div class="recipe-item-container">
+                <h3>@Html.DisplayFor(modelItem => Model.ElementAt(i).Recipe.Name)</h3>
+                <h5>@Html.DisplayFor(modelItem => Model.ElementAt(i).Recipe.Category.Name)</h5>
+                <p>Created by: @Html.DisplayFor(modelItem => Model.ElementAt(i).ApplicationUser.Email)</p>
+                <a class="btn btn-primary rounded" asp-action="Details" asp-route-id="@Model.ElementAt(i).RecipeId">Details</a>
             </div>
         </div>
-    </div>
+        if (i % 3 == 2 || i == Model.Count() - 1)
+        {
+        @: </div>
+    }
 }

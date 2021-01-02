@@ -15,7 +15,7 @@
            @if(item.IsReceived == false)
            {
            <h4>NEW !</h4>
-           <a class="btn btn-outline-primary" asp-action="SetNotificationReceived" asp-route-id="@item.Id">
+           <a class="btn btn-outline-primary float-right" asp-action="SetNotificationReceived" asp-route-id="@item.Id">
                Received!
            </a>
            }

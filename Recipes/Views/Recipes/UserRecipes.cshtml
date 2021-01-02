@@ -10,28 +10,31 @@
     <a asp-action="Create">Create New</a>
 </p>
 
-@foreach (var item in Model)
+<hr />
+
+@for (int i = 0; i < Model.Count(); i++)
 {
-
-    <div class="recipe-item">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-4 nopadding recipe-item-pic">
-                    <img src="~/images/@item.Picture"
-                         style="width: 100%;"
-                         asp-append-version="true" />
-                </div>
-                <div class="col-sm-8 recipe-item-container">
-                    <h3>@Html.DisplayFor(modelItem => item.Name)</h3>
-                    <h5>@Html.DisplayFor(modelItem => item.Category.Name)</h5>
-                    <p>Created by: @Html.DisplayFor(modelItem => item.ApplicationUser.Email)</p>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Share" asp-controller="Share" asp-route-id="@item.Id">Share</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-
-                </div>
+    if (i % 3 == 0)
+    {
+        @:<div class="row justify-content-center">
+        }
+        <div class="col-sm-3 nopadding recipe-item">
+            <img src="~/images/@Model.ElementAt(i).Picture"
+                 style="width: 100%; height: 200px;"
+                 class="recipe-item-pic"
+                 asp-append-version="true" />
+            <div class="recipe-item-container">
+                <h3>@Html.DisplayFor(modelItem => Model.ElementAt(i).Name)</h3>
+                <h5>@Html.DisplayFor(modelItem => Model.ElementAt(i).Category.Name)</h5>
+                <p>Created by: @Html.DisplayFor(modelItem => Model.ElementAt(i).ApplicationUser.Email)</p>
+                <a asp-action="Edit" asp-route-id="@Model.ElementAt(i).Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@Model.ElementAt(i).Id">Details</a> |
+                <a asp-action="Share" asp-controller="Share" asp-route-id="@Model.ElementAt(i).Id">Share</a> |
+                <a asp-action="Delete" asp-route-id="@Model.ElementAt(i).Id">Delete</a>
             </div>
         </div>
-    </div>
+        if (i % 3 == 2 || i == Model.Count() - 1)
+        {
+        @: </div>
+    }
 }

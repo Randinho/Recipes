@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Index";
-
+    
 }
 
 <h1>All recipes</h1>
@@ -11,22 +11,24 @@
     <a asp-action="Create">Create New</a>
 </p>
 <form asp-action="Index" method="get">
-    <div class="form col-sm-4">
-        <p>
+    <div class="form col-sm-4 nopadding">
+        
             <input type="text" class="box-shadow rounded" name="searchString" value="@ViewData["CurrentFilter"]" />
             <input type="text" name="currentCategoryFilters" value="@ViewData["CurrentCategoryFilters"]" hidden />
             <input type="submit" value="Search" class="btn btn-dark" />
-        </p>
+       
     </div>
 </form>
 <button class="btn btn-dark" onclick="toggleFilters()">Search by category</button>
 <div style="display: none;" id="filterForm">
     <form asp-action="Index" method="get">
-        @foreach (var item in ViewBag.CategoryFilters)
-        {
-        <div style="padding: 2px;">
-            <input name="categoryFilters" type="checkbox" checked="@item.IsChecked" value="@item.Id" /> @item.Name
-        </div>
+        @foreach(var item in ViewBag.CategoryFilters)
+        {         
+           
+            <div style="padding: 2px;">
+                <input name="categoryFilters" type="checkbox" checked="@item.IsChecked" value="@item.Id" /> @item.Name
+            </div>
+            
         }
         <input type="text" name="currentFilter" value="@ViewData["CurrentFilter"]" hidden />
         <br />
@@ -34,52 +36,76 @@
     </form>
 </div>
 <hr />
-    
-        @foreach (var item in Model)
-        {
-            
-                <div class="recipe-item">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-sm-4 nopadding recipe-item-pic">
-                                <img src="~/images/@item.Picture"
-                                     style="width: 100%;"
-                                     asp-append-version="true" />
-                            </div>
-                            <div class="col-sm-8 recipe-item-container">
-                                <h3>@Html.DisplayFor(modelItem => item.Name)</h3>
-                                <h5>@Html.DisplayFor(modelItem => item.Category.Name)</h5>
-                                <p>Created by: @Html.DisplayFor(modelItem => item.ApplicationUser.Email)</p>
-                                <a class="btn btn-primary rounded" asp-action="Details" asp-route-id="@item.Id">Details</a>
 
-                            </div>
+@*  @foreach (var item in Model)
+    {
+
+            <div class="recipe-item">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-4 nopadding recipe-item-pic">
+                            <img src="~/images/@item.Picture"
+                                 style="width: 100%;"
+                                 asp-append-version="true" />
+                        </div>
+                        <div class="col-sm-8 recipe-item-container">
+                            <h3>@Html.DisplayFor(modelItem => item.Name)</h3>
+                            <h5>@Html.DisplayFor(modelItem => item.Category.Name)</h5>
+                            <p>Created by: @Html.DisplayFor(modelItem => item.ApplicationUser.Email)</p>
+                            <a class="btn btn-primary rounded" asp-action="Details" asp-route-id="@item.Id">Details</a>
+
                         </div>
                     </div>
-                </div>   
-        }
-    
-<hr />
+                </div>
+            </div>
+    } *@
 
+@for (int i = 0; i < Model.Count; i++)
+{
+    if(i % 3 == 0)
+    {
+        @:<div class="row justify-content-center">
+    }
+    <div class="col-sm-3 nopadding recipe-item">
+        <img src="~/images/@Model[i].Picture"
+             style="width: 100%; height: 200px;"
+             class="recipe-item-pic"
+             asp-append-version="true" />
+        <div class="recipe-item-container">
+            <h3>@Html.DisplayFor(modelItem => Model[i].Name)</h3>
+            <h5>@Html.DisplayFor(modelItem => Model[i].Category.Name)</h5>
+            <p>Created by: @Html.DisplayFor(modelItem => Model[i].ApplicationUser.Email)</p>
+            <a class="btn btn-primary rounded" asp-action="Details" asp-route-id="@Model[i].Id">Details</a>
+        </div>
+    </div>
+    if(i % 3 == 2 || i == Model.Count-1)
+    {
+        @: </div>
+    }
+}
+
+<hr />
 
 @{
     var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
     var nextDisabled = !Model.HasNextPage ? "disabled" : "";
 }
-
-<a asp-action="Index"
-   asp-route-pageNumber="@(Model.PageIndex - 1)"
-   asp-route-currentFilter="@ViewData["CurrentFilter"]"
-   asp-route-currentCategoryFilters="@ViewData["CurrentCategoryFilters"]"
-   class="btn btn-primary @prevDisabled">
-    Previous
-</a>
-<a asp-action="Index"
-   asp-route-pageNumber="@(Model.PageIndex + 1)"
-   asp-route-currentFilter="@ViewData["CurrentFilter"]"
-   asp-route-currentCategoryFilters="@ViewData["CurrentCategoryFilters"]"
-   class="btn btn-primary @nextDisabled">
-    Next
-</a>
+<div class="row">
+    <a asp-action="Index"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       asp-route-currentCategoryFilters="@ViewData["CurrentCategoryFilters"]"
+       class="btn btn-primary @prevDisabled">
+        Previous
+    </a>
+    <a asp-action="Index"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       asp-route-currentCategoryFilters="@ViewData["CurrentCategoryFilters"]"
+       class="btn btn-primary @nextDisabled">
+        Next
+    </a>
+</div>
 
 <script>
     function toggleFilters() {

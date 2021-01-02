@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Recipes.Data;
 using Recipes.Models;
@@ -51,6 +52,13 @@ namespace Recipes.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [Route("/permission")]
+        public IActionResult PermissionDenied(string message)
+        {
+            ViewBag.Message = message;
+            return View();
         }
     }
 }

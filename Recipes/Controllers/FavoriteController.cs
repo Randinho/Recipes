@@ -8,9 +8,11 @@ using Recipes.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Recipes.Controllers
 {
+    [Authorize]
     public class FavoriteController : Controller
     {
         public ApplicationDbContext context { get; }
@@ -30,6 +32,7 @@ namespace Recipes.Controllers
 
         public async Task<IActionResult> Index()
         {
+            
             var favoriteRecipes = await context.Favorites
                 .Include(x => x.Recipe.ApplicationUser)  
                 .Include(x => x.Recipe.Category)
@@ -55,8 +58,12 @@ namespace Recipes.Controllers
         public async Task<IActionResult> Delete(int recipeId, string userId)
         {
             var fav = await context.Favorites.FirstOrDefaultAsync(x => x.ApplicationUserId == userId && x.RecipeId == recipeId);
-            context.Favorites.Remove(fav);
-            await context.SaveChangesAsync();
+            if(fav.ApplicationUserId == GetCurrentUserId())
+            {
+                context.Favorites.Remove(fav);
+                await context.SaveChangesAsync();
+            }
+            
 
             return RedirectToAction(nameof(Index));
         }

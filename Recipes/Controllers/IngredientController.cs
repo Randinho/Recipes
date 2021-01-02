@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Recipes.Data;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Recipes.Controllers
 {
+    [Authorize]
     public class IngredientController : Controller
     {
         public ApplicationDbContext context { get; }
@@ -21,7 +23,7 @@ namespace Recipes.Controllers
             Logger = logger;
         }
         [HttpGet]
-        public IActionResult Source(string term)
+        public IActionResult IngredientSource(string term)
         {
             //string term = HttpContext.Request.Query["term"].ToString();
             var result = (from I in context.Ingredients
@@ -32,6 +34,7 @@ namespace Recipes.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        
         public async Task<IActionResult> AddIngredient(string ingredientName, string amount, int recipeId)
         {
             if (ModelState.IsValid)
