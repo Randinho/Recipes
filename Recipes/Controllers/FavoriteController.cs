@@ -9,19 +9,20 @@ using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace Recipes.Controllers
 {
     [Authorize]
     public class FavoriteController : BaseController
     {
-        public ApplicationDbContext context { get; }
-        //public UserManager<ApplicationUser> userManager { get; }
+        private readonly ApplicationDbContext context;
+        private readonly ILogger<Favorite> logger;
 
-        public FavoriteController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) : base(userManager)
+        public FavoriteController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, ILogger<Favorite> logger) : base(userManager)
         {        
             this.context = context;
-            //this.userManager = userManager;
+            this.logger = logger;
         }
 
         public async Task<IActionResult> Index()
@@ -46,20 +47,23 @@ namespace Recipes.Controllers
             });
 
             await context.SaveChangesAsync();
-            return RedirectToAction("Details", "Recipes", new { id });
+            return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Delete(int recipeId, string userId)
+        public async Task<IActionResult> Delete(int recipeId)
         {
-            var fav = await context.Favorites.FirstOrDefaultAsync(x => x.ApplicationUserId == userId && x.RecipeId == recipeId);
-            if(fav.ApplicationUserId == GetCurrentUserId())
+           
+            var fav = await context.Favorites.FirstOrDefaultAsync(x => x.ApplicationUserId == GetCurrentUserId() && x.RecipeId == recipeId); 
+            if (fav != null)
             {
+                logger.LogInformation(fav.RecipeId.ToString());
+                logger.LogInformation(fav.ApplicationUserId);
                 context.Favorites.Remove(fav);
                 await context.SaveChangesAsync();
             }
-            
 
             return RedirectToAction(nameof(Index));
         }
+
     }
 }

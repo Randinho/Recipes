@@ -68,10 +68,6 @@ namespace Recipes.Controllers
             return RedirectToAction("Edit", "Recipes", new { id = recipeId });
         }
 
-        private bool IngredientExists(string name)
-        {
-            Logger.LogInformation(context.Ingredients.Any(x => x.Name == name).ToString());
-            return context.Ingredients.Any(x => x.Name == name);
-        }
+        private bool IngredientExists(string name) => context.Ingredients.Any(x => x.Name == name);   
     }
 }

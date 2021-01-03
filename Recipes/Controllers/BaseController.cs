@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Recipes.Data;
 using Recipes.Models;
 using System;
@@ -14,10 +15,11 @@ namespace Recipes.Controllers
     {
         
        public UserManager<ApplicationUser> userManager;
+       
        public BaseController(UserManager<ApplicationUser> userManager)
        {
             this.userManager = userManager;
-            
+    
        }
 
         public string GetCurrentUserId()

@@ -42,13 +42,7 @@ namespace Recipes.Controllers
                     Name = item.Name,
                     Id = item.Id
                 };
-                if (checkedFilters.Contains(item.Id)){
-                    filter.IsChecked = true;
-                }
-                else
-                {
-                    filter.IsChecked = false;
-                }
+                filter.IsChecked = checkedFilters.Contains(item.Id); 
                 filters.Add(filter);           
             }
             return filters;
@@ -178,7 +172,7 @@ namespace Recipes.Controllers
             {
                 return NotFound();
             }
-            if(RecipeBelongsToCurrentUser(recipe.Id))
+            if(RecipeBelongsToCurrentUser(recipe))
             {
                 ViewBag.Ingredients = await context.RecipeIngredients.Include(x => x.Ingredient).Where(x => x.RecipeId == id).ToListAsync();
                 ViewBag.Categories = await context.Categories.ToListAsync();
@@ -243,7 +237,7 @@ namespace Recipes.Controllers
             {
                 return NotFound();
             }
-            if (RecipeBelongsToCurrentUser(recipe.Id)){
+            if (RecipeBelongsToCurrentUser(recipe)){
                 return View(recipe);
             }
             else
@@ -262,11 +256,6 @@ namespace Recipes.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool RecipeExists(int id)
-        {
-            return context.Recipes.Any(e => e.Id == id);
-        }
-
         [Route("/myrecipes")]
         [Authorize]
         public async Task<IActionResult> UserRecipes()
@@ -274,13 +263,7 @@ namespace Recipes.Controllers
             return View(await context.Recipes.Include(x => x.Category).Where(x => x.ApplicationUserId == GetCurrentUserId()).ToListAsync());
         }
 
-        public bool RecipeBelongsToCurrentUser(int recipeId)
-        {
-            var recipe = context.Recipes.FirstOrDefault(x => x.Id == recipeId);
-
-            if (recipe.ApplicationUserId == GetCurrentUserId())
-                return true;
-            return false;
-        }
+        private bool RecipeExists(int id) => context.Recipes.Any(x => x.Id == id);
+        public bool RecipeBelongsToCurrentUser(Recipe recipe) => recipe.ApplicationUserId == GetCurrentUserId();   
     }
 }

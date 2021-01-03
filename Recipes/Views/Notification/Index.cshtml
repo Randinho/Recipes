@@ -5,22 +5,27 @@
 }
 
 <h1>Notifications</h1>
+<div class="text-center">
+    <a class="btn btn-primary" asp-action="SetNotificationReceived">
+        Click here to set all notifications received
+    </a>
+    <hr />
 
-<a class="btn btn-primary" asp-action="SetNotificationReceived">
-    Click here to set all notifications received
-</a>
-
-@foreach (var item in Model) {
-       <div class="card text-center rounded">
-           @if(item.IsReceived == false)
-           {
-           <h4>NEW !</h4>
-           <a class="btn btn-outline-primary float-right" asp-action="SetNotificationReceived" asp-route-id="@item.Id">
-               Received!
-           </a>
-           }
-           @item.Message <br />
-           @item.Date
-       </div>
-}
-  
+    @foreach (var item in Model)
+    {
+        <div class="card rounded">
+            @if (item.IsReceived == false)
+            {
+            <div class="card-header text-center">
+                <h4>NEW !</h4>
+                <a class="btn btn-primary" asp-action="SetNotificationReceived" asp-route-id="@item.Id">
+                    Set Received!
+                </a>
+            </div>            
+            }
+            @item.Message <br />
+            @item.Date
+        </div>
+        <br />
+    }
+</div>
