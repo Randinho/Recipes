@@ -264,6 +264,6 @@ namespace Recipes.Controllers
         }
 
         private bool RecipeExists(int id) => context.Recipes.Any(x => x.Id == id);
-        public bool RecipeBelongsToCurrentUser(Recipe recipe) => recipe.ApplicationUserId == GetCurrentUserId();   
+        private bool RecipeBelongsToCurrentUser(Recipe recipe) => recipe.ApplicationUserId == GetCurrentUserId();   
     }
 }

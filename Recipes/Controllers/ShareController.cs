@@ -61,7 +61,7 @@ namespace Recipes.Controllers
             }
         }
 
-        public bool IsAlreadyShared(int recipeId, string userId) => context.Shared.Any(x => x.ApplicationUserId == userId && x.RecipeId == recipeId);
+        private bool IsAlreadyShared(int recipeId, string userId) => context.Shared.Any(x => x.ApplicationUserId == userId && x.RecipeId == recipeId);
         
     }
 }
