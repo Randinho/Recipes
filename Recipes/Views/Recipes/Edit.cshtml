@@ -14,7 +14,7 @@
 <h4>Recipe</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
@@ -25,7 +25,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
-                <textarea asp-for="Description" class="form-control" style="white-space: pre">@Model.Description</textarea>
+                <textarea asp-for="Description" class="form-control" rows="20" cols="30" style="white-space: pre">@Model.Description</textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
@@ -45,7 +45,7 @@
         </form>
     </div>
 
-    <div class="col-md-auto">
+    <div class="col-md-4">
         <div class="text-center">
             <h3>Ingredients:</h3>
             @foreach(var item in ViewBag.Ingredients)
