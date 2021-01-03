@@ -1,0 +1,1 @@
+Web application based on ASP.NET Core MVC. The app allows you to store your culinary recipes, publish them or share your private recipe with friends. Preview of public recipe is accessible to everyone. Next steps: development of current functionalities, comments and recipes ratings, generating shopping list from recipe's ingredients data via e.g. qrcode
