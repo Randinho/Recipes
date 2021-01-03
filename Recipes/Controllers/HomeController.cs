@@ -14,25 +14,16 @@ using System.Threading.Tasks;
 
 namespace Recipes.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ApplicationDbContext context;
-        private readonly UserManager<ApplicationUser> userManager; 
+        private readonly ApplicationDbContext context;    
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager) : base(userManager)
         {
             _logger = logger;
-            this.context = context;
-            this.userManager = userManager;
+            this.context = context;     
         }
-
-        private string GetCurrentUserId()
-        {
-            ClaimsPrincipal current = this.User;
-            return userManager.GetUserId(current);
-        }
-        
 
         public IActionResult Index()
         {

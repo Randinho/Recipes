@@ -13,21 +13,15 @@ using Microsoft.AspNetCore.Authorization;
 namespace Recipes.Controllers
 {
     [Authorize]
-    public class FavoriteController : Controller
+    public class FavoriteController : BaseController
     {
         public ApplicationDbContext context { get; }
-        public UserManager<ApplicationUser> userManager { get; }
+        //public UserManager<ApplicationUser> userManager { get; }
 
-        public FavoriteController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
-        {
+        public FavoriteController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) : base(userManager)
+        {        
             this.context = context;
-            this.userManager = userManager;
-        }
-
-        private string GetCurrentUserId()
-        {
-            ClaimsPrincipal currentUser = this.User;
-            return userManager.GetUserId(currentUser);
+            //this.userManager = userManager;
         }
 
         public async Task<IActionResult> Index()

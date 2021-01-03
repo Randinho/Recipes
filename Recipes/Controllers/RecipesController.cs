@@ -17,25 +17,18 @@ using Recipes.ViewModels;
 namespace Recipes.Controllers
 {
     
-    public class RecipesController : Controller
+    public class RecipesController : BaseController
     {
         private readonly ApplicationDbContext context;
         private readonly IWebHostEnvironment hostEnvironment;
-        private readonly ILogger<Recipe> logger;
-        private readonly UserManager<ApplicationUser> userManager;
+        private readonly ILogger<Recipe> logger;      
 
-        public RecipesController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, ILogger<Recipe> logger, UserManager<ApplicationUser> userManager)
+        public RecipesController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, ILogger<Recipe> logger, UserManager<ApplicationUser> userManager) : base(userManager)
         {
             this.context = context;
             hostEnvironment = webHostEnvironment;
             this.logger = logger;
-            this.userManager = userManager;
-        }
-
-        private string GetCurrentUserId()
-        {
-            ClaimsPrincipal currentUser = this.User;
-            return userManager.GetUserId(currentUser);
+           
         }
 
         public List<CategoryFilterViewModel> GetCategoryFilters(List<int> checkedFilters)
@@ -78,10 +71,12 @@ namespace Recipes.Controllers
                 searchString = currentFilter;
             }
             ViewData["CurrentFilter"] = searchString;
-            ViewData["CurrentCategoryFilters"] = string.Join(",", categoryFilters.Select(f => f.ToString()).ToArray());
-            ViewBag.SavedFilters = categoryFilters.ToString();     
+            ViewData["CurrentCategoryFilters"] = string.Join(",", categoryFilters.Select(f => f.ToString()).ToArray());       
 
-            var recipes = context.Recipes.Include(x => x.Category).Include(x => x.ApplicationUser).Where(x => x.IsPrivate == false).ToList();
+            var recipes = context.Recipes
+                .Include(x => x.Category)
+                .Include(x => x.ApplicationUser)
+                .Where(x => x.IsPrivate == false).ToList();
             
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -90,7 +85,7 @@ namespace Recipes.Controllers
             if(categoryFilters.Count != 0)
             recipes = recipes.Where(r => categoryFilters.Contains(r.CategoryId)).ToList();
 
-            int pageSize = 8;
+            int pageSize = 12;
 
             return View(PaginatedList<Recipe>.Create(recipes, pageNumber ?? 1, pageSize));
         }
@@ -106,6 +101,7 @@ namespace Recipes.Controllers
                 .Include(m => m.Category)
                 .Include(m => m.ApplicationUser)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             var isFavorite = await context.Favorites.FirstOrDefaultAsync(x => x.ApplicationUserId == GetCurrentUserId() && x.RecipeId == recipe.Id);
           
             if (isFavorite != null)
@@ -182,7 +178,7 @@ namespace Recipes.Controllers
             {
                 return NotFound();
             }
-            if(IsRecipeBelongsToCurrentUser(recipe.Id))
+            if(RecipeBelongsToCurrentUser(recipe.Id))
             {
                 ViewBag.Ingredients = await context.RecipeIngredients.Include(x => x.Ingredient).Where(x => x.RecipeId == id).ToListAsync();
                 ViewBag.Categories = await context.Categories.ToListAsync();
@@ -247,7 +243,7 @@ namespace Recipes.Controllers
             {
                 return NotFound();
             }
-            if (IsRecipeBelongsToCurrentUser(recipe.Id)){
+            if (RecipeBelongsToCurrentUser(recipe.Id)){
                 return View(recipe);
             }
             else
@@ -272,12 +268,13 @@ namespace Recipes.Controllers
         }
 
         [Route("/myrecipes")]
+        [Authorize]
         public async Task<IActionResult> UserRecipes()
         {
             return View(await context.Recipes.Include(x => x.Category).Where(x => x.ApplicationUserId == GetCurrentUserId()).ToListAsync());
         }
 
-        public bool IsRecipeBelongsToCurrentUser(int recipeId)
+        public bool RecipeBelongsToCurrentUser(int recipeId)
         {
             var recipe = context.Recipes.FirstOrDefault(x => x.Id == recipeId);
 

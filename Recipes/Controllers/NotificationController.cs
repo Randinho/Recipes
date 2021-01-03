@@ -11,21 +11,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Recipes.Controllers
 {
-    public class NotificationController : Controller
-    {
-        private readonly UserManager<ApplicationUser> userManager;
+    public class NotificationController : BaseController
+    {     
         private readonly ApplicationDbContext context;
-        public NotificationController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public NotificationController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) : base(userManager)
         {
-            this.context = context;
-            this.userManager = userManager;
+            this.context = context;        
         }
 
-        private string GetCurrentUserId()
-        {
-            ClaimsPrincipal currentUser = this.User;
-            return userManager.GetUserId(currentUser);
-        }
         public async Task<IActionResult> Index()
         {
             var notifications = await context.Notifications.Where(x => x.ReceiverId == GetCurrentUserId()).ToListAsync();

@@ -13,16 +13,14 @@ using System.Threading.Tasks;
 namespace Recipes.Controllers
 {
     [Authorize]
-    public class ShareController : Controller
+    public class ShareController : BaseController
     {
-        public ApplicationDbContext context { get; }
-        public UserManager<ApplicationUser> userManager { get; }
+        public ApplicationDbContext context { get; }   
         public NotificationSender notificationSender;
         
-        public ShareController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public ShareController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) : base(userManager)
         {
             this.context = context;
-            this.userManager = userManager;
             notificationSender = new NotificationSender(context);
         }
 
