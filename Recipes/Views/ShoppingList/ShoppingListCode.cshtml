@@ -1,0 +1,11 @@
+﻿@model Byte[]
+
+
+<div class="text-center">
+    <h1>Your generated QRCode</h1>
+    <h4>Scan it with your phone and open the shopping list with Notes Application</h4>
+    <img src="@String.Format("data:image/png;base64,{0}",
+             Convert.ToBase64String(Model))" height="300" width="300" />
+</div> 
+
+<a class="btn btn-primary" asp-controller="Recipes" asp-action="Index">Go back to all recipes</a>
