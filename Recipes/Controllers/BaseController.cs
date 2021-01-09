@@ -14,7 +14,7 @@ namespace Recipes.Controllers
     public class BaseController : Controller
     {
         
-       public UserManager<ApplicationUser> userManager;
+       public UserManager<ApplicationUser> userManager;     
        
        public BaseController(UserManager<ApplicationUser> userManager)
        {

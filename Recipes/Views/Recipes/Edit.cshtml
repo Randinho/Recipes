@@ -1,4 +1,4 @@
-﻿@model Recipes.Models.Recipe
+﻿@model Recipes.DTO.RecipeDTO
 
 @{
     ViewData["Title"] = "Edit";
@@ -39,6 +39,8 @@
                 </select>
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
+                @Html.HiddenFor(m => m.Picture)
+                @Html.HiddenFor(m => m.ApplicationUserId)
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -48,7 +50,7 @@
     <div class="col-md-4">
         <div class="text-center">
             <h3>Ingredients:</h3>
-            @foreach(var item in ViewBag.Ingredients)
+            @foreach(var item in Model.RecipeIngredients)
             {
                 <p>@item.Ingredient.Name - @item.Amount <a class="btn" asp-route-ingredientId="@item.IngredientId" asp-route-recipeId="@Model.Id" asp-action="Delete" asp-controller="Ingredient">X</a></p>
             }

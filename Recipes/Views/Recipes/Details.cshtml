@@ -1,4 +1,4 @@
-﻿@model Recipes.Models.Recipe
+﻿@model Recipes.DTO.RecipeDTO
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> SignInManager
 
@@ -18,7 +18,7 @@
         </div>
         <div class="col-sm-6">
             <h3>Ingredients:</h3>
-            @foreach(var item in ViewBag.Ingredients)
+            @foreach(var item in Model.RecipeIngredients)
             {
                 <p>@item.Ingredient.Name - @item.Amount</p>
             }

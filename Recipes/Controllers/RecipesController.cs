@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Recipes.Data;
+using Recipes.DTO;
 using Recipes.Models;
 using Recipes.ViewModels;
 
@@ -21,13 +23,19 @@ namespace Recipes.Controllers
     {
         private readonly ApplicationDbContext context;
         private readonly IWebHostEnvironment hostEnvironment;
-        private readonly ILogger<Recipe> logger;      
+        private readonly ILogger<Recipe> logger;
+        private readonly IMapper _mapper;
 
-        public RecipesController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment, ILogger<Recipe> logger, UserManager<ApplicationUser> userManager) : base(userManager)
+        public RecipesController(ApplicationDbContext context,
+            IWebHostEnvironment webHostEnvironment,
+            ILogger<Recipe> logger,
+            UserManager<ApplicationUser> userManager,
+            IMapper mapper) : base(userManager)
         {
             this.context = context;
             hostEnvironment = webHostEnvironment;
             this.logger = logger;
+            _mapper = mapper;
            
         }
 
@@ -79,9 +87,11 @@ namespace Recipes.Controllers
             if(categoryFilters.Count != 0)
             recipes = recipes.Where(r => categoryFilters.Contains(r.CategoryId)).ToList();
 
+            var mappedRecipes = _mapper.Map<RecipeDTO[]>(recipes);
+            
             int pageSize = 12;
 
-            return View(PaginatedList<Recipe>.Create(recipes, pageNumber ?? 1, pageSize));
+            return View(PaginatedList<RecipeDTO>.Create(mappedRecipes, pageNumber ?? 1, pageSize));
         }
       
         public async Task<IActionResult> Details(int? id)
@@ -93,7 +103,9 @@ namespace Recipes.Controllers
 
             var recipe = await context.Recipes
                 .Include(m => m.Category)
-                .Include(m => m.ApplicationUser)
+                .Include(m => m.ApplicationUser)       
+                .Include(m => m.RecipeIngredients)
+                .ThenInclude(x => x.Ingredient)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             var isFavorite = await context.Favorites.FirstOrDefaultAsync(x => x.ApplicationUserId == GetCurrentUserId() && x.RecipeId == recipe.Id);
@@ -104,8 +116,8 @@ namespace Recipes.Controllers
             {
                 return NotFound();
             }
-            ViewBag.Ingredients = await context.RecipeIngredients.Include(x => x.Ingredient).Where(x => x.RecipeId == id).ToListAsync();
-            return View(recipe);
+            
+            return View(_mapper.Map<RecipeDTO>(recipe));
         }
       
         [Authorize]
@@ -166,7 +178,9 @@ namespace Recipes.Controllers
                 return NotFound();
             }
 
-            var recipe = await context.Recipes
+            var recipe = await context.Recipes         
+                .Include(r => r.RecipeIngredients)
+                .ThenInclude(i => i.Ingredient)
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (recipe == null)
             {
@@ -174,9 +188,10 @@ namespace Recipes.Controllers
             }
             if(RecipeBelongsToCurrentUser(recipe))
             {
-                ViewBag.Ingredients = await context.RecipeIngredients.Include(x => x.Ingredient).Where(x => x.RecipeId == id).ToListAsync();
+                
+                //ViewBag.Ingredients = await context.RecipeIngredients.Include(x => x.Ingredient).Where(x => x.RecipeId == id).ToListAsync();
                 ViewBag.Categories = await context.Categories.ToListAsync();
-                return View(recipe);
+                return View(_mapper.Map<RecipeDTO>(recipe));
             }
             else
             {
@@ -188,7 +203,7 @@ namespace Recipes.Controllers
       
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Recipe recipe)
+        public async Task<IActionResult> Edit(int id, RecipeDTO recipe)
         {
             if (id != recipe.Id)
             {
@@ -199,12 +214,7 @@ namespace Recipes.Controllers
             {
                 try
                 {
-                     var Recipe = await context.Recipes.FirstOrDefaultAsync(x => x.Id == id);                 
-                        Recipe.Name = recipe.Name;
-                        Recipe.Description = recipe.Description;
-                        Recipe.IsPrivate = recipe.IsPrivate;
-                        Recipe.CategoryId = recipe.CategoryId;
-                    
+                    var Recipe = _mapper.Map<Recipe>(recipe);               
                     context.Update(Recipe);
                     await context.SaveChangesAsync();
                 }
