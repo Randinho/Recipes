@@ -6,19 +6,16 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Recipes.Data;
 using Recipes.Models;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+
 
 namespace Recipes.Controllers
 {
     public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ApplicationDbContext context;    
+        private readonly ApplicationDbContext _context;    
 
         public HomeController(ILogger<HomeController> logger, 
             ApplicationDbContext context, 
@@ -26,12 +23,12 @@ namespace Recipes.Controllers
             IMapper mapper) : base(userManager, mapper)
         {
             _logger = logger;
-            this.context = context;     
+            _context = context;     
         }
 
         public IActionResult Index()
         {
-            var isAnyNotReceivedNotification = context.Notifications.FirstOrDefault(x => x.ReceiverId == GetCurrentUserId() && x.IsReceived == false);
+            var isAnyNotReceivedNotification = _context.Notifications.FirstOrDefault(x => x.ReceiverId == GetCurrentUserId() && x.IsReceived == false);
             if (isAnyNotReceivedNotification != null)
                 return View(true);
             else

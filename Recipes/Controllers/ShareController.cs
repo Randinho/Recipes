@@ -7,8 +7,6 @@ using Recipes.Data;
 using Recipes.DTO;
 using Recipes.Models;
 using Recipes.Services;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,20 +15,20 @@ namespace Recipes.Controllers
     [Authorize]
     public class ShareController : BaseController
     {
-        public ApplicationDbContext context { get; }   
-        public NotificationSender notificationSender;
+        private readonly ApplicationDbContext _context;
+        private NotificationSender notificationSender;
         
         public ShareController(ApplicationDbContext context, 
             UserManager<ApplicationUser> userManager, 
             IMapper mapper) : base(userManager, mapper)
         {
-            this.context = context;
+            _context = context;
             notificationSender = new NotificationSender(context);
         }
 
         public async Task<IActionResult> Index()
         {
-            var shared = await context.Shared
+            var shared = await _context.Shared
                 .Include(x => x.Recipe.ApplicationUser)
                 .Include(x => x.Recipe.Category)
                 .Where(x => x.ApplicationUserId == GetCurrentUserId()).ToListAsync();
@@ -45,17 +43,17 @@ namespace Recipes.Controllers
         [HttpPost]
         public async Task<IActionResult> Share(int id, string email)
         {
-            var user = await context.ApplicationUsers.FirstOrDefaultAsync(x => x.Email == email);
+            var user = await _context.ApplicationUsers.FirstOrDefaultAsync(x => x.Email == email);
             if (!IsAlreadyShared(id, user.Id))
             {
-                context.Shared.Add(new Shared
+                _context.Shared.Add(new Shared
                 {
                     RecipeId = id,
                     ApplicationUserId = user.Id,
                     Confirmed = true
                 });
                 notificationSender.SendNotification("You received a recipe. Check it out in 'shared with me' tab.", user.Id);
-                await context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
                 return RedirectToAction("UserRecipes", "Recipes");
             }
             else
@@ -65,7 +63,7 @@ namespace Recipes.Controllers
             }
         }
 
-        private bool IsAlreadyShared(int recipeId, string userId) => context.Shared.Any(x => x.ApplicationUserId == userId && x.RecipeId == recipeId);
+        private bool IsAlreadyShared(int recipeId, string userId) => _context.Shared.Any(x => x.ApplicationUserId == userId && x.RecipeId == recipeId);
         
     }
 }

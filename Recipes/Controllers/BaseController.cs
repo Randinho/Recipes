@@ -15,12 +15,12 @@ namespace Recipes.Controllers
     public class BaseController : Controller
     {
         
-       private UserManager<ApplicationUser> userManager;
+       private UserManager<ApplicationUser> _userManager;
         protected IMapper _mapper;
        
        public BaseController(UserManager<ApplicationUser> userManager, IMapper mapper)
        {
-            this.userManager = userManager;
+            _userManager = userManager;
             _mapper = mapper;
     
        }
@@ -28,7 +28,7 @@ namespace Recipes.Controllers
         public string GetCurrentUserId()
         {
             ClaimsPrincipal currentUser = this.User;
-            return userManager.GetUserId(currentUser);
+            return _userManager.GetUserId(currentUser);
         }
     }
 }

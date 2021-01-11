@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -21,9 +20,9 @@ namespace Recipes.Controllers
     
     public class RecipesController : BaseController
     {
-        private readonly ApplicationDbContext context;
-        private readonly IWebHostEnvironment hostEnvironment;
-        private readonly ILogger<Recipe> logger;
+        private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _hostEnvironment;
+        private readonly ILogger<Recipe> _logger;
 
         public RecipesController(ApplicationDbContext context,
             IWebHostEnvironment webHostEnvironment,
@@ -31,14 +30,14 @@ namespace Recipes.Controllers
             UserManager<ApplicationUser> userManager,
             IMapper mapper) : base(userManager, mapper)
         {
-            this.context = context;
-            hostEnvironment = webHostEnvironment;
-            this.logger = logger; 
+            _context = context;
+            _hostEnvironment = webHostEnvironment;
+            _logger = logger; 
         }
 
         public List<CategoryFilterViewModel> GetCategoryFilters(List<int> checkedFilters)
         {
-            var categories = context.Categories.ToList();
+            var categories = _context.Categories.ToList();
             var filters = new List<CategoryFilterViewModel>();
             foreach(var item in categories)
             {
@@ -54,7 +53,7 @@ namespace Recipes.Controllers
 
         }
             
-        public IActionResult Index(int? pageNumber, string searchString, string currentFilter, List<int> categoryFilters, string currentCategoryFilters)
+        public async Task<IActionResult> Index(int? pageNumber, string searchString, string currentFilter, List<int> categoryFilters, string currentCategoryFilters)
         {   
             if(currentCategoryFilters != null)
             {
@@ -72,10 +71,10 @@ namespace Recipes.Controllers
             ViewData["CurrentFilter"] = searchString;
             ViewData["CurrentCategoryFilters"] = string.Join(",", categoryFilters.Select(f => f.ToString()).ToArray());       
 
-            var recipes = context.Recipes
+            var recipes = await _context.Recipes
                 .Include(x => x.Category)
                 .Include(x => x.ApplicationUser)
-                .Where(x => x.IsPrivate == false).ToList();
+                .Where(x => x.IsPrivate == false).ToListAsync();
             
             if (!String.IsNullOrEmpty(searchString))
             {
@@ -98,14 +97,14 @@ namespace Recipes.Controllers
                 return NotFound();
             }
 
-            var recipe = await context.Recipes
+            var recipe = await _context.Recipes
                 .Include(m => m.Category)
                 .Include(m => m.ApplicationUser)       
                 .Include(m => m.RecipeIngredients)
                 .ThenInclude(x => x.Ingredient)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            var isFavorite = await context.Favorites.FirstOrDefaultAsync(x => x.ApplicationUserId == GetCurrentUserId() && x.RecipeId == recipe.Id);
+            var isFavorite = await _context.Favorites.FirstOrDefaultAsync(x => x.ApplicationUserId == GetCurrentUserId() && x.RecipeId == recipe.Id);
           
             if (isFavorite != null)
                 ViewBag.IsFavorite = true;
@@ -120,7 +119,7 @@ namespace Recipes.Controllers
         [Authorize]
         public async Task<IActionResult> Create()
         {
-            ViewBag.Categories = await context.Categories.ToListAsync();
+            ViewBag.Categories = await _context.Categories.ToListAsync();
             return View();
         }
        
@@ -140,8 +139,8 @@ namespace Recipes.Controllers
                     ApplicationUserId = GetCurrentUserId(),
                     CategoryId = model.CategoryId
                 };
-                context.Add(recipe);
-                await context.SaveChangesAsync();
+                _context.Add(recipe);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View();
@@ -153,17 +152,16 @@ namespace Recipes.Controllers
             
             if(model.PictureFile != null)
             {
-                string uploadFolderPath = Path.Combine(hostEnvironment.WebRootPath, "images");               
+                string uploadFolderPath = Path.Combine(_hostEnvironment.WebRootPath, "images");               
                 uniqueFileName = Guid.NewGuid().ToString() + "_" + model.PictureFile.FileName;
                 string filePath = Path.Combine(uploadFolderPath, uniqueFileName);
    
                 using(var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    model.PictureFile.CopyTo(stream);
-                    
+                    model.PictureFile.CopyTo(stream); 
                 }
             }
-            logger.LogInformation("unique: " + uniqueFileName);
+            _logger.LogInformation("unique: " + uniqueFileName);
             return uniqueFileName;
         }
       
@@ -175,7 +173,7 @@ namespace Recipes.Controllers
                 return NotFound();
             }
 
-            var recipe = await context.Recipes         
+            var recipe = await _context.Recipes         
                 .Include(r => r.RecipeIngredients)
                 .ThenInclude(i => i.Ingredient)
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -184,18 +182,15 @@ namespace Recipes.Controllers
                 return NotFound();
             }
             if(RecipeBelongsToCurrentUser(recipe))
-            {
-                
+            {   
                 //ViewBag.Ingredients = await context.RecipeIngredients.Include(x => x.Ingredient).Where(x => x.RecipeId == id).ToListAsync();
-                ViewBag.Categories = await context.Categories.ToListAsync();
+                ViewBag.Categories = await _context.Categories.ToListAsync();
                 return View(_mapper.Map<RecipeDTO>(recipe));
             }
             else
             {
-                
                 return RedirectToAction("PermissionDenied", "Home", new { message = "You are not supposed to be on this page." });
             }
-            
         }
       
         [HttpPost]
@@ -212,8 +207,8 @@ namespace Recipes.Controllers
                 try
                 {
                     var Recipe = _mapper.Map<Recipe>(recipe);               
-                    context.Update(Recipe);
-                    await context.SaveChangesAsync();
+                    _context.Update(Recipe);
+                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -237,8 +232,7 @@ namespace Recipes.Controllers
             {
                 return NotFound();
             }
-
-            var recipe = await context.Recipes
+            var recipe = await _context.Recipes
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (recipe == null)
             {
@@ -257,9 +251,9 @@ namespace Recipes.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var recipe = await context.Recipes.FindAsync(id);
-            context.Recipes.Remove(recipe);
-            await context.SaveChangesAsync();
+            var recipe = await _context.Recipes.FindAsync(id);
+            _context.Recipes.Remove(recipe);
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -267,10 +261,10 @@ namespace Recipes.Controllers
         [Authorize]
         public async Task<IActionResult> UserRecipes()
         {
-            return View(await context.Recipes.Include(x => x.Category).Where(x => x.ApplicationUserId == GetCurrentUserId()).ToListAsync());
+            return View(await _context.Recipes.Include(x => x.Category).Where(x => x.ApplicationUserId == GetCurrentUserId()).ToListAsync());
         }
 
-        private bool RecipeExists(int id) => context.Recipes.Any(x => x.Id == id);
+        private bool RecipeExists(int id) => _context.Recipes.Any(x => x.Id == id);
         private bool RecipeBelongsToCurrentUser(Recipe recipe) => recipe.ApplicationUserId == GetCurrentUserId();   
     }
 }

@@ -15,17 +15,17 @@ namespace Recipes.Controllers
 {
     public class NotificationController : BaseController
     {     
-        private readonly ApplicationDbContext context;
+        private readonly ApplicationDbContext _context;
         public NotificationController(ApplicationDbContext context, 
             UserManager<ApplicationUser> userManager, 
             IMapper mapper) : base(userManager, mapper)
         {
-            this.context = context;        
+            _context = context;        
         }
 
         public async Task<IActionResult> Index()
         {
-            var notifications = await context.Notifications.Where(x => x.ReceiverId == GetCurrentUserId()).ToListAsync();
+            var notifications = await _context.Notifications.Where(x => x.ReceiverId == GetCurrentUserId()).ToListAsync();
 
             return View(_mapper.Map<NotificationDTO>(notifications));
         }
@@ -34,20 +34,20 @@ namespace Recipes.Controllers
         {
             if(id != null)
             {
-              context.Notifications.FirstOrDefault(x => x.Id == id).IsReceived = true;
+              _context.Notifications.FirstOrDefault(x => x.Id == id).IsReceived = true;
                 
             }
             else
             {
-                var notifications = await context.Notifications.Where(x => x.ReceiverId == GetCurrentUserId() && x.IsReceived == false).ToListAsync();
+                var notifications = await _context.Notifications.Where(x => x.ReceiverId == GetCurrentUserId() && x.IsReceived == false).ToListAsync();
                 foreach (var item in notifications) 
                 {
                     item.IsReceived = true;
-                    context.Notifications.Update(item);
+                    _context.Notifications.Update(item);
                 }
                     
             }
-            await context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

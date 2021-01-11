@@ -18,21 +18,21 @@ namespace Recipes.Controllers
 {
     public class ShoppingListController : BaseController
     {
-        private readonly ApplicationDbContext context;
-        private readonly ILogger<Ingredient> logger;
+        private readonly ApplicationDbContext _context;
+        private readonly ILogger<Ingredient> _logger;
         public ShoppingListController(ApplicationDbContext context, 
             UserManager<ApplicationUser> userManager, 
             ILogger<Ingredient> logger, 
             IMapper mapper) : base(userManager, mapper)
         {
-            this.context = context;
-            this.logger = logger;
+            _context = context;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index(int recipeId)
         {
             List<ShoppingListItemViewModel> shoppingList = new List<ShoppingListItemViewModel>();
-            var recipe = await context.Recipes
+            var recipe = await _context.Recipes
                 .Include(x => x.RecipeIngredients)
                 .ThenInclude(ri => ri.Ingredient)
                 .FirstOrDefaultAsync(x => x.Id == recipeId);
