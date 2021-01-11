@@ -45,8 +45,7 @@ namespace Recipes.Controllers
                     Name = ingredient.Ingredient.Name,
                     InPossession = false
                 });
-            }
-            
+            }          
             return View(shoppingList);
         }
 
@@ -69,7 +68,6 @@ namespace Recipes.Controllers
                 QRCodeGenerator.ECCLevel.Q);
             QRCode qrCode = new QRCode(qrCodeData);
             Bitmap qrCodeImage = qrCode.GetGraphic(20);
-
 
             return View(BitmapToBytes(qrCodeImage));
         }

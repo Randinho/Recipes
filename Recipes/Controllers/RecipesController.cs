@@ -56,18 +56,14 @@ namespace Recipes.Controllers
         public async Task<IActionResult> Index(int? pageNumber, string searchString, string currentFilter, List<int> categoryFilters, string currentCategoryFilters)
         {   
             if(currentCategoryFilters != null)
-            {
                 categoryFilters = currentCategoryFilters.Split(",").Select(int.Parse).ToList();
-            }
+            
             ViewBag.CategoryFilters = GetCategoryFilters(categoryFilters);
             if(searchString != null)
-            {
-                pageNumber = 1;
-            }
+                pageNumber = 1;           
             else
-            {
                 searchString = currentFilter;
-            }
+            
             ViewData["CurrentFilter"] = searchString;
             ViewData["CurrentCategoryFilters"] = string.Join(",", categoryFilters.Select(f => f.ToString()).ToArray());       
 
@@ -76,10 +72,9 @@ namespace Recipes.Controllers
                 .Include(x => x.ApplicationUser)
                 .Where(x => x.IsPrivate == false).ToListAsync();
             
-            if (!String.IsNullOrEmpty(searchString))
-            {
+            if(!String.IsNullOrEmpty(searchString))
                 recipes = recipes.Where(r => r.Name.Contains(searchString) || r.Description.Contains(searchString)).ToList();
-            }
+            
             if(categoryFilters.Count != 0)
             recipes = recipes.Where(r => categoryFilters.Contains(r.CategoryId)).ToList();
 
@@ -93,9 +88,7 @@ namespace Recipes.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var recipe = await _context.Recipes
                 .Include(m => m.Category)
@@ -109,9 +102,7 @@ namespace Recipes.Controllers
             if (isFavorite != null)
                 ViewBag.IsFavorite = true;
             if (recipe == null)
-            {
                 return NotFound();
-            }
             
             return View(_mapper.Map<RecipeDTO>(recipe));
         }
@@ -168,29 +159,23 @@ namespace Recipes.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
+            if (id == null)  
                 return NotFound();
-            }
-
+        
             var recipe = await _context.Recipes         
                 .Include(r => r.RecipeIngredients)
                 .ThenInclude(i => i.Ingredient)
                 .FirstOrDefaultAsync(x => x.Id == id);
-            if (recipe == null)
-            {
+            if (recipe == null) 
                 return NotFound();
-            }
+            
             if(RecipeBelongsToCurrentUser(recipe))
-            {   
-                //ViewBag.Ingredients = await context.RecipeIngredients.Include(x => x.Ingredient).Where(x => x.RecipeId == id).ToListAsync();
+            {          
                 ViewBag.Categories = await _context.Categories.ToListAsync();
                 return View(_mapper.Map<RecipeDTO>(recipe));
             }
             else
-            {
                 return RedirectToAction("PermissionDenied", "Home", new { message = "You are not supposed to be on this page." });
-            }
         }
       
         [HttpPost]
@@ -198,9 +183,7 @@ namespace Recipes.Controllers
         public async Task<IActionResult> Edit(int id, RecipeDTO recipe)
         {
             if (id != recipe.Id)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
@@ -213,13 +196,10 @@ namespace Recipes.Controllers
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!RecipeExists(recipe.Id))
-                    {
                         return NotFound();
-                    }
+                   
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(UserRecipes));
             }
@@ -229,22 +209,19 @@ namespace Recipes.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
+
             var recipe = await _context.Recipes
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (recipe == null)
-            {
+
+            if (recipe == null) 
                 return NotFound();
-            }
-            if (RecipeBelongsToCurrentUser(recipe)){
+           
+            if (RecipeBelongsToCurrentUser(recipe)) 
                 return View(recipe);
-            }
+                
             else
-            {
-                return RedirectToAction("PermissionDenied", "Home", new { message = "You are not supposed to be on this page." });
-            }        
+                return RedirectToAction("PermissionDenied", "Home", new { message = "You are not supposed to be on this page." });   
         }
     
         [HttpPost, ActionName("Delete")]
@@ -263,7 +240,7 @@ namespace Recipes.Controllers
         {
             var userRecipes = await _context.Recipes.Include(x => x.Category).Where(x => x.ApplicationUserId == GetCurrentUserId()).ToListAsync();
             var mappedUserRecipes = _mapper.Map<RecipeDTO[]>(userRecipes);
-            int pageSize = 3;
+            int pageSize = 12;
             return View(PaginatedList<RecipeDTO>.Create(mappedUserRecipes, pageNumber ?? 1, pageSize));
         }
 

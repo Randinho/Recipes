@@ -33,10 +33,7 @@ namespace Recipes.Controllers
         public async Task<IActionResult> SetNotificationReceived(int? id)
         {
             if(id != null)
-            {
               _context.Notifications.FirstOrDefault(x => x.Id == id).IsReceived = true;
-                
-            }
             else
             {
                 var notifications = await _context.Notifications.Where(x => x.ReceiverId == GetCurrentUserId() && x.IsReceived == false).ToListAsync();
