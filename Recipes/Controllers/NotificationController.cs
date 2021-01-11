@@ -27,7 +27,7 @@ namespace Recipes.Controllers
         {
             var notifications = await _context.Notifications.Where(x => x.ReceiverId == GetCurrentUserId()).ToListAsync();
 
-            return View(_mapper.Map<NotificationDTO>(notifications));
+            return View(_mapper.Map<NotificationDTO[]>(notifications));
         }
 
         public async Task<IActionResult> SetNotificationReceived(int? id)

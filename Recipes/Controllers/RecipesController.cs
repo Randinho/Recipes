@@ -259,9 +259,12 @@ namespace Recipes.Controllers
 
         [Route("/myrecipes")]
         [Authorize]
-        public async Task<IActionResult> UserRecipes()
+        public async Task<IActionResult> UserRecipes(int? pageNumber)
         {
-            return View(await _context.Recipes.Include(x => x.Category).Where(x => x.ApplicationUserId == GetCurrentUserId()).ToListAsync());
+            var userRecipes = await _context.Recipes.Include(x => x.Category).Where(x => x.ApplicationUserId == GetCurrentUserId()).ToListAsync();
+            var mappedUserRecipes = _mapper.Map<RecipeDTO[]>(userRecipes);
+            int pageSize = 3;
+            return View(PaginatedList<RecipeDTO>.Create(mappedUserRecipes, pageNumber ?? 1, pageSize));
         }
 
         private bool RecipeExists(int id) => _context.Recipes.Any(x => x.Id == id);

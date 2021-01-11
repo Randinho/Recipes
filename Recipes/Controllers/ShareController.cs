@@ -26,13 +26,16 @@ namespace Recipes.Controllers
             notificationSender = new NotificationSender(context);
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNumber)
         {
             var shared = await _context.Shared
                 .Include(x => x.Recipe.ApplicationUser)
                 .Include(x => x.Recipe.Category)
                 .Where(x => x.ApplicationUserId == GetCurrentUserId()).ToListAsync();
-            return View(_mapper.Map<SharedDTO[]>(shared));
+            var mappedSharedRecipes = _mapper.Map<SharedDTO[]>(shared);
+
+            int pageSize = 12;
+            return View(PaginatedList<SharedDTO>.Create(mappedSharedRecipes, pageNumber ?? 1, pageSize));
         }
      
         public IActionResult Share(int id)

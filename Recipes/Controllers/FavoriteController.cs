@@ -26,15 +26,17 @@ namespace Recipes.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index()
-        {
-            
+        public async Task<IActionResult> Index(int? pageNumber)
+        {     
             var favoriteRecipes = await _context.Favorites
                 .Include(x => x.Recipe.ApplicationUser)  
                 .Include(x => x.Recipe.Category)
                 .Where(x => x.ApplicationUserId == GetCurrentUserId()).ToListAsync();
-                
-            return View(_mapper.Map<FavoriteDTO[]>(favoriteRecipes));
+
+            var mappedFavorites = _mapper.Map<FavoriteDTO[]>(favoriteRecipes);
+
+            int pageSize = 12;   
+            return View(PaginatedList<FavoriteDTO>.Create(mappedFavorites, pageNumber ?? 1, pageSize));
         }
 
         public async Task<IActionResult> AddToFavorites(int id)

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Recipes.DTO.SharedDTO>
+﻿@model PaginatedList<Recipes.DTO.SharedDTO>
 
 @{
     ViewData["Title"] = "Index";
@@ -30,4 +30,21 @@
         @: </div>
     }
 }
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+<div class="row">
+    <a asp-action="Index"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       class="btn btn-primary @prevDisabled">
+        Previous
+    </a>
+    <a asp-action="Index"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       class="btn btn-primary @nextDisabled">
+        Next
+    </a>
+</div>
 
