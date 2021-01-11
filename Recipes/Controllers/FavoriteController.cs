@@ -10,6 +10,8 @@ using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+using AutoMapper;
+using Recipes.DTO;
 
 namespace Recipes.Controllers
 {
@@ -19,7 +21,9 @@ namespace Recipes.Controllers
         private readonly ApplicationDbContext context;
         private readonly ILogger<Favorite> logger;
 
-        public FavoriteController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, ILogger<Favorite> logger) : base(userManager)
+        public FavoriteController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, 
+            ILogger<Favorite> logger, 
+            IMapper mapper) : base(userManager, mapper)
         {        
             this.context = context;
             this.logger = logger;
@@ -33,7 +37,7 @@ namespace Recipes.Controllers
                 .Include(x => x.Recipe.Category)
                 .Where(x => x.ApplicationUserId == GetCurrentUserId()).ToListAsync();
                 
-            return View(favoriteRecipes);
+            return View(_mapper.Map<FavoriteDTO[]>(favoriteRecipes));
         }
 
         public async Task<IActionResult> AddToFavorites(int id)

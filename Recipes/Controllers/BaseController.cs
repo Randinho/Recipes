@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Recipes.Data;
@@ -14,11 +15,13 @@ namespace Recipes.Controllers
     public class BaseController : Controller
     {
         
-       public UserManager<ApplicationUser> userManager;     
+       private UserManager<ApplicationUser> userManager;
+        protected IMapper _mapper;
        
-       public BaseController(UserManager<ApplicationUser> userManager)
+       public BaseController(UserManager<ApplicationUser> userManager, IMapper mapper)
        {
             this.userManager = userManager;
+            _mapper = mapper;
     
        }
 

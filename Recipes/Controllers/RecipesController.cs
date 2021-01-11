@@ -24,19 +24,16 @@ namespace Recipes.Controllers
         private readonly ApplicationDbContext context;
         private readonly IWebHostEnvironment hostEnvironment;
         private readonly ILogger<Recipe> logger;
-        private readonly IMapper _mapper;
 
         public RecipesController(ApplicationDbContext context,
             IWebHostEnvironment webHostEnvironment,
             ILogger<Recipe> logger,
             UserManager<ApplicationUser> userManager,
-            IMapper mapper) : base(userManager)
+            IMapper mapper) : base(userManager, mapper)
         {
             this.context = context;
             hostEnvironment = webHostEnvironment;
-            this.logger = logger;
-            _mapper = mapper;
-           
+            this.logger = logger; 
         }
 
         public List<CategoryFilterViewModel> GetCategoryFilters(List<int> checkedFilters)

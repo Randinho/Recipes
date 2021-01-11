@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using QRCoder;
 using System.Drawing;
 using System.IO;
+using AutoMapper;
 
 namespace Recipes.Controllers
 {
@@ -19,7 +20,10 @@ namespace Recipes.Controllers
     {
         private readonly ApplicationDbContext context;
         private readonly ILogger<Ingredient> logger;
-        public ShoppingListController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, ILogger<Ingredient> logger) : base(userManager)
+        public ShoppingListController(ApplicationDbContext context, 
+            UserManager<ApplicationUser> userManager, 
+            ILogger<Ingredient> logger, 
+            IMapper mapper) : base(userManager, mapper)
         {
             this.context = context;
             this.logger = logger;

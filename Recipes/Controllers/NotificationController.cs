@@ -8,13 +8,17 @@ using Microsoft.AspNetCore.Identity;
 using Recipes.Models;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using Recipes.DTO;
 
 namespace Recipes.Controllers
 {
     public class NotificationController : BaseController
     {     
         private readonly ApplicationDbContext context;
-        public NotificationController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) : base(userManager)
+        public NotificationController(ApplicationDbContext context, 
+            UserManager<ApplicationUser> userManager, 
+            IMapper mapper) : base(userManager, mapper)
         {
             this.context = context;        
         }
@@ -23,7 +27,7 @@ namespace Recipes.Controllers
         {
             var notifications = await context.Notifications.Where(x => x.ReceiverId == GetCurrentUserId()).ToListAsync();
 
-            return View(notifications);
+            return View(_mapper.Map<NotificationDTO>(notifications));
         }
 
         public async Task<IActionResult> SetNotificationReceived(int? id)

@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Recipes.Data;
+using Recipes.DTO;
 using Recipes.Models;
 using Recipes.Services;
 using System;
@@ -18,7 +20,9 @@ namespace Recipes.Controllers
         public ApplicationDbContext context { get; }   
         public NotificationSender notificationSender;
         
-        public ShareController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) : base(userManager)
+        public ShareController(ApplicationDbContext context, 
+            UserManager<ApplicationUser> userManager, 
+            IMapper mapper) : base(userManager, mapper)
         {
             this.context = context;
             notificationSender = new NotificationSender(context);
@@ -29,8 +33,8 @@ namespace Recipes.Controllers
             var shared = await context.Shared
                 .Include(x => x.Recipe.ApplicationUser)
                 .Include(x => x.Recipe.Category)
-                .Where(x => x.ApplicationUserId == userManager.GetUserId(this.User)).ToListAsync();
-            return View(shared);
+                .Where(x => x.ApplicationUserId == GetCurrentUserId()).ToListAsync();
+            return View(_mapper.Map<SharedDTO[]>(shared));
         }
      
         public IActionResult Share(int id)

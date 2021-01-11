@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -19,7 +20,10 @@ namespace Recipes.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext context;    
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager) : base(userManager)
+        public HomeController(ILogger<HomeController> logger, 
+            ApplicationDbContext context, 
+            UserManager<ApplicationUser> userManager,
+            IMapper mapper) : base(userManager, mapper)
         {
             _logger = logger;
             this.context = context;     
