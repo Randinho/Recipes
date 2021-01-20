@@ -14,6 +14,7 @@ namespace Recipes.DTO
 
         [Required]
         [Display(Name = "Category")]
+        [StringLength(255)]
         public string Name { get; set; }
         public ICollection<RecipeDTO> Recipes { get; set; }
 

@@ -8,13 +8,8 @@ namespace Recipes.Models
     public class Recipe
     {
         public int Id { get; set; }
-        [Required]
-        [StringLength(255)]
-        public string Name { get; set; }
-        [Required]
+        public string Name { get; set; }    
         public string Description { get; set; }
-        [Required]
-        [Display(Name = "Private")]
         public bool IsPrivate { get; set; }
         public string Picture { get; set; }
         public ApplicationUser ApplicationUser { get; set; }

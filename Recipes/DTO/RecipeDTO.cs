@@ -19,7 +19,7 @@ namespace Recipes.DTO
 
         public string Description { get; set; }
         [Required]
-        [Display(Name = "Private")]
+        [Display(Name = "Is private?")]
 
         public bool IsPrivate { get; set; }
         public string Picture { get; set; }

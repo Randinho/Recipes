@@ -21,7 +21,7 @@
             <div class="recipe-item-container">
                 <h3>@Html.DisplayFor(modelItem => Model.ElementAt(i).Recipe.Name)</h3>
                 <h5>@Html.DisplayFor(modelItem => Model.ElementAt(i).Recipe.Category.Name)</h5>
-                <p>Created by: @Html.DisplayFor(modelItem => Model.ElementAt(i).ApplicationUser.Email)</p>
+                <p>Created by: @Html.DisplayFor(modelItem => Model.ElementAt(i).Recipe.ApplicationUser.Email)</p>
                 <a class="btn btn-primary rounded" asp-controller="Recipes" asp-action="Details" asp-route-id="@Model.ElementAt(i).RecipeId">Details</a>
                 <a class="btn btn-primary rounded" asp-action="Delete" asp-route-recipeId="@Model.ElementAt(i).RecipeId">Remove</a>
             </div>
