@@ -17,13 +17,15 @@ namespace Recipes.Controllers
     {
         private readonly ApplicationDbContext _context;
         private NotificationSender notificationSender;
+        private readonly IMapper _mapper;
         
         public ShareController(ApplicationDbContext context, 
             UserManager<ApplicationUser> userManager, 
-            IMapper mapper) : base(userManager, mapper)
+            IMapper mapper) : base(userManager)
         {
             _context = context;
             notificationSender = new NotificationSender(context);
+            _mapper = mapper;
         }
 
         public async Task<IActionResult> Index(int? pageNumber)

@@ -19,8 +19,7 @@ namespace Recipes.Controllers
 
         public HomeController(ILogger<HomeController> logger, 
             ApplicationDbContext context, 
-            UserManager<ApplicationUser> userManager,
-            IMapper mapper) : base(userManager, mapper)
+            UserManager<ApplicationUser> userManager) : base(userManager)
         {
             _logger = logger;
             _context = context;     

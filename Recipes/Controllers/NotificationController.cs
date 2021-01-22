@@ -16,11 +16,13 @@ namespace Recipes.Controllers
     public class NotificationController : BaseController
     {     
         private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
         public NotificationController(ApplicationDbContext context, 
             UserManager<ApplicationUser> userManager, 
-            IMapper mapper) : base(userManager, mapper)
+            IMapper mapper) : base(userManager)
         {
-            _context = context;        
+            _context = context;
+            _mapper = mapper;
         }
 
         public async Task<IActionResult> Index()

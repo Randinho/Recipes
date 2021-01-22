@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Recipes.Data;
+using Recipes.Interfaces;
 using Recipes.Mappings;
 using Recipes.Models;
 using Recipes.Services;
@@ -49,6 +50,9 @@ namespace Recipes
             });
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
+
+            services.AddScoped<IRecipeService, RecipeService>();
+            services.AddScoped<IShoppingListService, ShoppingListService>();
             //services.AddMvc();
         }
 

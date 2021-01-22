@@ -13,74 +13,46 @@ using QRCoder;
 using System.Drawing;
 using System.IO;
 using AutoMapper;
+using Recipes.Interfaces;
 
 namespace Recipes.Controllers
 {
     public class ShoppingListController : BaseController
     {
-        private readonly ApplicationDbContext _context;
         private readonly ILogger<Ingredient> _logger;
-        public ShoppingListController(ApplicationDbContext context, 
-            UserManager<ApplicationUser> userManager, 
-            ILogger<Ingredient> logger, 
-            IMapper mapper) : base(userManager, mapper)
-        {
-            _context = context;
+        private readonly IRecipeService _recipeService;
+        private readonly IShoppingListService _shoppingListService;
+        public ShoppingListController(UserManager<ApplicationUser> userManager, 
+            ILogger<Ingredient> logger,
+            IRecipeService recipeService,
+            IShoppingListService shoppingListService) : base(userManager)
+        {           
             _logger = logger;
+            _recipeService = recipeService;
+            _shoppingListService = shoppingListService;
         }
 
         public async Task<IActionResult> Index(int recipeId)
-        {
-            List<ShoppingListItemViewModel> shoppingList = new List<ShoppingListItemViewModel>();
-            var recipe = await _context.Recipes
-                .Include(x => x.RecipeIngredients)
-                .ThenInclude(ri => ri.Ingredient)
-                .FirstOrDefaultAsync(x => x.Id == recipeId);
+        { 
+            var recipe = await _recipeService.GetRecipeById(recipeId);
 
-            foreach(var ingredient in recipe.RecipeIngredients.ToList())
-            {
-                shoppingList.Add(new ShoppingListItemViewModel
-                {
-                    Id = ingredient.IngredientId,
-                    Name = ingredient.Ingredient.Name,
-                    InPossession = false
-                });
-            }          
+            var shoppingList = _shoppingListService.GetShoppingListItems(recipe);     
             return View(shoppingList);
         }
 
         [HttpPost]
-        public IActionResult Create(List<ShoppingListItemViewModel> shoppingList)
+        public IActionResult Create(IEnumerable<ShoppingListItemViewModel> shoppingList)
         {
-            shoppingList = shoppingList.Where(x => x.InPossession == false).ToList();
-            string txt = String.Join("\n", shoppingList.Select(s => s.Name).ToArray());
-            TempData["QRCodeText"] = txt;
+            TempData["QRCodeText"] = _shoppingListService.GenerateQRCodeString(shoppingList);
             return RedirectToAction(nameof(ShoppingListCode));
         }
 
-        
+
         public IActionResult ShoppingListCode()
         {
             var txt = TempData["QRCodeText"] as string;
 
-            QRCodeGenerator qrCodeGenerator = new QRCodeGenerator();
-            QRCodeData qrCodeData = qrCodeGenerator.CreateQrCode(txt,
-                QRCodeGenerator.ECCLevel.Q);
-            QRCode qrCode = new QRCode(qrCodeData);
-            Bitmap qrCodeImage = qrCode.GetGraphic(20);
-
-            return View(BitmapToBytes(qrCodeImage));
-        }
-
-        [NonAction]
-        private static Byte[] BitmapToBytes(Bitmap image)
-        {
-            using(MemoryStream stream = new MemoryStream())
-            {
-                
-                image.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                return stream.ToArray();
-            }
+            return View(_shoppingListService.GenerateQRCode(txt));
         }
     }
 }

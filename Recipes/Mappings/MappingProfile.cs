@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Recipes.Models;
 using Recipes.DTO;
+using Recipes.ViewModels;
 
 namespace Recipes.Mappings
 {
@@ -21,6 +22,9 @@ namespace Recipes.Mappings
             CreateMap<Notification, NotificationDTO>();
 
             CreateMap<RecipeDTO, Recipe>();
+            CreateMap<CategoryDTO, Category>();
+
+            CreateMap<RecipeViewModel, Recipe>();
         }
     }
 }

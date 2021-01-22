@@ -17,13 +17,15 @@ namespace Recipes.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<Favorite> _logger;
+        private readonly IMapper _mapper;
 
         public FavoriteController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, 
-            ILogger<Favorite> logger, 
-            IMapper mapper) : base(userManager, mapper)
+            ILogger<Favorite> logger,
+            IMapper mapper) : base(userManager)
         {        
             _context = context;
             _logger = logger;
+            _mapper = mapper;
         }
 
         public async Task<IActionResult> Index(int? pageNumber)
