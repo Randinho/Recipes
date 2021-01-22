@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Recipes.Models;
 using Recipes.DTO;
+using Recipes.Models;
 using Recipes.ViewModels;
 
 namespace Recipes.Mappings

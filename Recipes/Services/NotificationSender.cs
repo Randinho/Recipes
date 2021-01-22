@@ -2,17 +2,13 @@
 using Recipes.Interfaces;
 using Recipes.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Recipes.Services
 {
-     class NotificationSender : INotificationSender
-    { 
+    class NotificationSender : INotificationSender
+    {
         private readonly ApplicationDbContext _context;
-    
+
         public NotificationSender(ApplicationDbContext context)
         {
             _context = context;

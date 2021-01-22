@@ -1,13 +1,12 @@
-﻿using Recipes.DTO;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Recipes.Data;
+using Recipes.DTO;
 using Recipes.Interfaces;
-using System;
+using Recipes.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Recipes.Data;
-using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Recipes.Models;
 
 namespace Recipes.Services
 {
@@ -47,8 +46,8 @@ namespace Recipes.Services
                 await _context.SaveChangesAsync();
                 return true;
             }
-                return false;
-            
+            return false;
+
         }
 
         private bool IsAlreadyShared(int recipeId, string userId) =>

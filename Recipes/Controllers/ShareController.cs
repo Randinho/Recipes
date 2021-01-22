@@ -12,8 +12,8 @@ namespace Recipes.Controllers
     public class ShareController : BaseController
     {
         private readonly IShareService _shareService;
-        
-        public ShareController(UserManager<ApplicationUser> userManager, 
+
+        public ShareController(UserManager<ApplicationUser> userManager,
             IShareService shareService) : base(userManager)
         {
             _shareService = shareService;
@@ -26,7 +26,7 @@ namespace Recipes.Controllers
             int pageSize = 12;
             return View(PaginatedList<SharedDTO>.Create(shared, pageNumber ?? 1, pageSize));
         }
-     
+
         public IActionResult Share(int id)
         {
             return View(id);

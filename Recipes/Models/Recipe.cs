@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
 
 
 namespace Recipes.Models
@@ -8,7 +7,7 @@ namespace Recipes.Models
     public class Recipe
     {
         public int Id { get; set; }
-        public string Name { get; set; }    
+        public string Name { get; set; }
         public string Description { get; set; }
         public bool IsPrivate { get; set; }
         public string Picture { get; set; }

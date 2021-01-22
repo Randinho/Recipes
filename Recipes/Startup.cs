@@ -1,9 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,10 +10,6 @@ using Recipes.Interfaces;
 using Recipes.Mappings;
 using Recipes.Models;
 using Recipes.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Recipes
 {
@@ -55,6 +48,8 @@ namespace Recipes
             services.AddScoped<IShoppingListService, ShoppingListService>();
             services.AddScoped<IShareService, ShareService>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IIngredientService, IngredientService>();
+            services.AddScoped<IFavoriteService, FavoriteService>();
 
             services.AddScoped<INotificationSender, NotificationSender>();
             //services.AddMvc();

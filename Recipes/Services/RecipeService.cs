@@ -18,8 +18,8 @@ namespace Recipes.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
-        private readonly IWebHostEnvironment _hostEnvironment; 
-        public RecipeService(ApplicationDbContext dbContext, 
+        private readonly IWebHostEnvironment _hostEnvironment;
+        public RecipeService(ApplicationDbContext dbContext,
             IMapper mapper,
             IWebHostEnvironment hostEnvironment)
         {
@@ -73,7 +73,7 @@ namespace Recipes.Services
 
             var mapped = _mapper.Map<RecipeDTO>(recipe);
             return mapped;
-        } 
+        }
         public async Task<RecipeDTO> Update(RecipeDTO model)
         {
             var recipe = _mapper.Map<Recipe>(model);
@@ -88,7 +88,7 @@ namespace Recipes.Services
             var recipe = await _context.Recipes.FirstOrDefaultAsync(r => r.Id == id);
             _context.Remove(recipe);
             await _context.SaveChangesAsync();
-        }    
+        }
         public async Task<IEnumerable<CategoryFilterViewModel>> GetCategoryFilters(IEnumerable<int> checkedFilters)
         {
             var categories = await _context.Categories.ToListAsync();
@@ -142,7 +142,7 @@ namespace Recipes.Services
                     model.PictureFile.CopyTo(stream);
                 }
             }
-            
+
             return uniqueFileName;
         }
     }

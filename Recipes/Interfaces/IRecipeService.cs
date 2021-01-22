@@ -1,9 +1,6 @@
 ﻿using Recipes.DTO;
-using Recipes.Models;
 using Recipes.ViewModels;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Recipes.Interfaces
@@ -20,6 +17,6 @@ namespace Recipes.Interfaces
         Task<IEnumerable<CategoryFilterViewModel>> GetCategoryFilters(IEnumerable<int> checkedFilters);
         Task<IEnumerable<CategoryDTO>> GetCategoriesList();
         Task<bool> RecipeExists(int id);
-        Task<bool> RecipeBelongsToCurrentUser(int id, string userId); 
+        Task<bool> RecipeBelongsToCurrentUser(int id, string userId);
     }
 }

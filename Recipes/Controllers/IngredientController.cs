@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Recipes.Data;
+using Recipes.Interfaces;
 using Recipes.Models;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,18 +12,21 @@ namespace Recipes.Controllers
     [Authorize]
     public class IngredientController : Controller
     {
-        public ApplicationDbContext _context { get; }
-        public ILogger<Ingredient> _logger { get; }
+        private readonly ApplicationDbContext _context;
+        private readonly ILogger<Ingredient> _logger;
+        private readonly IIngredientService _ingredientService;
 
-        public IngredientController(ApplicationDbContext context, ILogger<Ingredient> logger)
+        public IngredientController(ApplicationDbContext context,
+            ILogger<Ingredient> logger,
+            IIngredientService ingredientService)
         {
             _context = context;
             _logger = logger;
+            _ingredientService = ingredientService;
         }
         [HttpGet]
         public IActionResult IngredientSource(string term)
         {
-            //string term = HttpContext.Request.Query["term"].ToString();
             var result = (from I in _context.Ingredients
                           where I.Name.Contains(term)
                           select new { value = I.Name });
@@ -32,42 +35,21 @@ namespace Recipes.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        
+
         public async Task<IActionResult> AddIngredient(string ingredientName, string amount, int recipeId)
         {
             if (ModelState.IsValid)
             {
-                if (IngredientExists(ingredientName) == false)
-                {
-                    _logger.LogInformation("Dodawanie składnika.");
-                    _context.Ingredients.Add(new Ingredient
-                    {
-                        Name = ingredientName
-                    });
-                    await _context.SaveChangesAsync();
-                }
-                var ingredient = await _context.Ingredients.FirstOrDefaultAsync(x => x.Name == ingredientName);
-                await _context.RecipeIngredients.AddAsync(new RecipeIngredients
-                {
-                    RecipeId = recipeId,
-                    IngredientId = ingredient.Id,
-                    Amount = amount
-                });
-                await _context.SaveChangesAsync();
+                await _ingredientService.Create(ingredientName, amount, recipeId);
             }
-
             return RedirectToAction("Edit", "Recipes", new { id = recipeId });
         }
 
         public async Task<IActionResult> Delete(int ingredientId, int recipeId)
         {
-            var ingredient = await _context.RecipeIngredients.FirstOrDefaultAsync(x => x.IngredientId == ingredientId && x.RecipeId == recipeId);
-            _context.RecipeIngredients.Remove(ingredient);
-            await _context.SaveChangesAsync();
+            await _ingredientService.Remove(ingredientId, recipeId);
 
             return RedirectToAction("Edit", "Recipes", new { id = recipeId });
         }
-
-        private bool IngredientExists(string name) => _context.Ingredients.Any(x => x.Name == name);   
     }
 }

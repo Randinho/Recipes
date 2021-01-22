@@ -1,26 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Recipes.Data;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Recipes.Models;
-using System.Security.Claims;
-using Microsoft.EntityFrameworkCore;
-using AutoMapper;
-using Recipes.DTO;
+using Microsoft.AspNetCore.Mvc;
+using Recipes.Data;
 using Recipes.Interfaces;
+using Recipes.Models;
+using System.Threading.Tasks;
 
 namespace Recipes.Controllers
 {
     public class NotificationController : BaseController
-    {     
+    {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly INotificationService _notificationService;
-        public NotificationController(ApplicationDbContext context, 
-            UserManager<ApplicationUser> userManager, 
+        public NotificationController(ApplicationDbContext context,
+            UserManager<ApplicationUser> userManager,
             IMapper mapper,
             INotificationService notificationService) : base(userManager)
         {

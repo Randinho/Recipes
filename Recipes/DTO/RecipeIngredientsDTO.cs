@@ -1,10 +1,4 @@
-﻿using Recipes.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Recipes.DTO
+﻿namespace Recipes.DTO
 {
     public class RecipeIngredientsDTO
     {

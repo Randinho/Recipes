@@ -1,37 +1,31 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
-using Recipes.Data;
+using Recipes.Interfaces;
 using Recipes.Models;
 using System.Diagnostics;
-using System.Linq;
-
+using System.Threading.Tasks;
 
 namespace Recipes.Controllers
 {
     public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ApplicationDbContext _context;    
+        private readonly INotificationService _notificationService;
 
-        public HomeController(ILogger<HomeController> logger, 
-            ApplicationDbContext context, 
-            UserManager<ApplicationUser> userManager) : base(userManager)
+        public HomeController(ILogger<HomeController> logger,
+            UserManager<ApplicationUser> userManager,
+            INotificationService notificationService) : base(userManager)
         {
             _logger = logger;
-            _context = context;     
+            _notificationService = notificationService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var isAnyNotReceivedNotification = _context.Notifications.FirstOrDefault(x => x.ReceiverId == GetCurrentUserId() && x.IsReceived == false);
-            if (isAnyNotReceivedNotification != null)
-                return View(true);
-            else
-                return View(false);
+            return View(await _notificationService.AnyNotReceivedNotification(GetCurrentUserId()));
         }
 
         public IActionResult Privacy()

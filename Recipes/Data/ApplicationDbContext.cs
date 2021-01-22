@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Recipes.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Recipes.Data
 {
@@ -12,7 +9,7 @@ namespace Recipes.Data
         public DbSet<Recipe> Recipes { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<Favorite> Favorites { get; set; } 
+        public DbSet<Favorite> Favorites { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<RecipeIngredients> RecipeIngredients { get; set; }
         public DbSet<Shared> Shared { get; set; }

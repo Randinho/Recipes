@@ -1,12 +1,11 @@
-﻿using Recipes.DTO;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Recipes.Data;
+using Recipes.DTO;
 using Recipes.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using Recipes.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace Recipes.Services
 {
@@ -33,14 +32,20 @@ namespace Recipes.Services
             else
             {
                 var notifications = await _context.Notifications.Where(x => x.ReceiverId == userId && x.IsReceived == false).ToListAsync();
-                foreach(var item in notifications)
+                foreach (var item in notifications)
                 {
                     item.IsReceived = true;
                     _context.Notifications.Update(item);
                 }
             }
             await _context.SaveChangesAsync();
-            
+
         }
+
+        public async Task<bool> AnyNotReceivedNotification(string userId) =>
+            await _context.Notifications.AnyAsync(x => x.ReceiverId == userId && x.IsReceived == false);
+
+
+
     }
 }

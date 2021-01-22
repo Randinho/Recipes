@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MimeKit;
+﻿using MailKit.Net.Smtp;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using MailKit.Net.Smtp;
+using Microsoft.Extensions.Options;
+using MimeKit;
+using System;
+using System.Threading.Tasks;
 
 namespace Recipes.Services
 {
@@ -34,7 +32,7 @@ namespace Recipes.Services
                     Text = body
                 };
 
-                using(var client = new SmtpClient())
+                using (var client = new SmtpClient())
                 {
                     client.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
@@ -52,7 +50,7 @@ namespace Recipes.Services
                     await client.DisconnectAsync(true);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new InvalidOperationException(e.Message);
             }

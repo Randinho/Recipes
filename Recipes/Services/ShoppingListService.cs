@@ -1,15 +1,14 @@
-﻿using Recipes.Interfaces;
+﻿using AutoMapper;
+using QRCoder;
+using Recipes.Data;
+using Recipes.DTO;
+using Recipes.Interfaces;
+using Recipes.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Recipes.Data;
-using AutoMapper;
-using Recipes.ViewModels;
-using Recipes.DTO;
-using QRCoder;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 
 namespace Recipes.Services
 {
@@ -23,12 +22,12 @@ namespace Recipes.Services
             _context = context;
             _mapper = mapper;
         }
-        
+
         public IEnumerable<ShoppingListItemViewModel> GetShoppingListItems(RecipeDTO recipe)
         {
             List<ShoppingListItemViewModel> shoppingList = new List<ShoppingListItemViewModel>();
 
-            foreach(var item in recipe.RecipeIngredients.ToList())
+            foreach (var item in recipe.RecipeIngredients.ToList())
             {
                 shoppingList.Add(new ShoppingListItemViewModel
                 {
@@ -48,7 +47,7 @@ namespace Recipes.Services
         public Byte[] GenerateQRCode(string txt)
         {
             Bitmap image = GenerateImage(txt);
-            using(MemoryStream stream = new MemoryStream())
+            using (MemoryStream stream = new MemoryStream())
             {
                 image.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
                 return stream.ToArray();
