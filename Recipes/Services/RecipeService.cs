@@ -88,7 +88,6 @@ namespace Recipes.Services
             var recipe = await _context.Recipes.FirstOrDefaultAsync(r => r.Id == id);
             _context.Remove(recipe);
             await _context.SaveChangesAsync();
-            return;
         }    
         public async Task<IEnumerable<CategoryFilterViewModel>> GetCategoryFilters(IEnumerable<int> checkedFilters)
         {

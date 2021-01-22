@@ -1,13 +1,9 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Recipes.Data;
 using Recipes.DTO;
+using Recipes.Interfaces;
 using Recipes.Models;
-using Recipes.Services;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Recipes.Controllers
@@ -15,29 +11,20 @@ namespace Recipes.Controllers
     [Authorize]
     public class ShareController : BaseController
     {
-        private readonly ApplicationDbContext _context;
-        private NotificationSender notificationSender;
-        private readonly IMapper _mapper;
+        private readonly IShareService _shareService;
         
-        public ShareController(ApplicationDbContext context, 
-            UserManager<ApplicationUser> userManager, 
-            IMapper mapper) : base(userManager)
+        public ShareController(UserManager<ApplicationUser> userManager, 
+            IShareService shareService) : base(userManager)
         {
-            _context = context;
-            notificationSender = new NotificationSender(context);
-            _mapper = mapper;
+            _shareService = shareService;
         }
 
         public async Task<IActionResult> Index(int? pageNumber)
         {
-            var shared = await _context.Shared
-                .Include(x => x.Recipe.ApplicationUser)
-                .Include(x => x.Recipe.Category)
-                .Where(x => x.ApplicationUserId == GetCurrentUserId()).ToListAsync();
-            var mappedSharedRecipes = _mapper.Map<SharedDTO[]>(shared);
+            var shared = await _shareService.GetSharedRecipesList(GetCurrentUserId());
 
             int pageSize = 12;
-            return View(PaginatedList<SharedDTO>.Create(mappedSharedRecipes, pageNumber ?? 1, pageSize));
+            return View(PaginatedList<SharedDTO>.Create(shared, pageNumber ?? 1, pageSize));
         }
      
         public IActionResult Share(int id)
@@ -48,27 +35,14 @@ namespace Recipes.Controllers
         [HttpPost]
         public async Task<IActionResult> Share(int id, string email)
         {
-            var user = await _context.ApplicationUsers.FirstOrDefaultAsync(x => x.Email == email);
-            if (!IsAlreadyShared(id, user.Id))
-            {
-                _context.Shared.Add(new Shared
-                {
-                    RecipeId = id,
-                    ApplicationUserId = user.Id,
-                    Confirmed = true
-                });
-                notificationSender.SendNotification("You received a recipe. Check it out in 'shared with me' tab.", user.Id);
-                await _context.SaveChangesAsync();
+
+            if (await _shareService.ShareRecipe(id, email))
                 return RedirectToAction("UserRecipes", "Recipes");
-            }
             else
             {
                 string message = "That recipe is already shared to chosen user.";
                 return RedirectToAction("PermissionDenied", "Home", new { message });
             }
         }
-
-        private bool IsAlreadyShared(int recipeId, string userId) => _context.Shared.Any(x => x.ApplicationUserId == userId && x.RecipeId == recipeId);
-        
     }
 }

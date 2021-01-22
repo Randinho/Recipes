@@ -20,7 +20,6 @@ namespace Recipes.Interfaces
         Task<IEnumerable<CategoryFilterViewModel>> GetCategoryFilters(IEnumerable<int> checkedFilters);
         Task<IEnumerable<CategoryDTO>> GetCategoriesList();
         Task<bool> RecipeExists(int id);
-        Task<bool> RecipeBelongsToCurrentUser(int id, string userId);
-        //string UploadFile(RecipeViewModel model);
+        Task<bool> RecipeBelongsToCurrentUser(int id, string userId); 
     }
 }

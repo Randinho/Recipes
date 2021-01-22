@@ -53,6 +53,10 @@ namespace Recipes
 
             services.AddScoped<IRecipeService, RecipeService>();
             services.AddScoped<IShoppingListService, ShoppingListService>();
+            services.AddScoped<IShareService, ShareService>();
+            services.AddScoped<INotificationService, NotificationService>();
+
+            services.AddScoped<INotificationSender, NotificationSender>();
             //services.AddMvc();
         }
 

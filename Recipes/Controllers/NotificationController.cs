@@ -10,6 +10,7 @@ using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using Recipes.DTO;
+using Recipes.Interfaces;
 
 namespace Recipes.Controllers
 {
@@ -17,36 +18,27 @@ namespace Recipes.Controllers
     {     
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly INotificationService _notificationService;
         public NotificationController(ApplicationDbContext context, 
             UserManager<ApplicationUser> userManager, 
-            IMapper mapper) : base(userManager)
+            IMapper mapper,
+            INotificationService notificationService) : base(userManager)
         {
             _context = context;
             _mapper = mapper;
+            _notificationService = notificationService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var notifications = await _context.Notifications.Where(x => x.ReceiverId == GetCurrentUserId()).ToListAsync();
+            var notifications = await _notificationService.GetNotificationList(GetCurrentUserId());
 
-            return View(_mapper.Map<NotificationDTO[]>(notifications));
+            return View(notifications);
         }
 
         public async Task<IActionResult> SetNotificationReceived(int? id)
         {
-            if(id != null)
-              _context.Notifications.FirstOrDefault(x => x.Id == id).IsReceived = true;
-            else
-            {
-                var notifications = await _context.Notifications.Where(x => x.ReceiverId == GetCurrentUserId() && x.IsReceived == false).ToListAsync();
-                foreach (var item in notifications) 
-                {
-                    item.IsReceived = true;
-                    _context.Notifications.Update(item);
-                }
-                    
-            }
-            await _context.SaveChangesAsync();
+            await _notificationService.SetNotificationsReceived(id, GetCurrentUserId());
 
             return RedirectToAction(nameof(Index));
         }

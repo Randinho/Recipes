@@ -1,4 +1,5 @@
 ﻿using Recipes.Data;
+using Recipes.Interfaces;
 using Recipes.Models;
 using System;
 using System.Collections.Generic;
@@ -8,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace Recipes.Services
 {
-    public class NotificationSender
-    {
+     class NotificationSender : INotificationSender
+    { 
+        private readonly ApplicationDbContext _context;
+    
         public NotificationSender(ApplicationDbContext context)
         {
-            this.context = context;
+            _context = context;
         }
-
-        public ApplicationDbContext context { get; }
 
         public void SendNotification(string message, string userId)
         {
@@ -26,8 +27,8 @@ namespace Recipes.Services
                 Date = DateTime.Now,
                 IsReceived = false
             };
-            context.Notifications.Add(notification);
-            context.SaveChanges();
+            _context.Notifications.Add(notification);
+            _context.SaveChanges();
         }
     }
 }
