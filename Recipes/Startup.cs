@@ -7,8 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Recipes.Data;
 using Recipes.Interfaces;
+using Recipes.Interfaces.Repositories;
 using Recipes.Mappings;
 using Recipes.Models;
+using Recipes.Repositories;
 using Recipes.Services;
 
 namespace Recipes
@@ -50,6 +52,11 @@ namespace Recipes
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IIngredientService, IngredientService>();
             services.AddScoped<IFavoriteService, FavoriteService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+
+            services.AddScoped<IRecipeRepository, RecipeRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IFavoriteRepository, FavoriteRepository>();
 
             services.AddScoped<INotificationSender, NotificationSender>();
             //services.AddMvc();

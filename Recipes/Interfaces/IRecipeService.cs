@@ -10,12 +10,9 @@ namespace Recipes.Interfaces
         Task<IEnumerable<RecipeDTO>> GetRecipesList(string searchString, List<int> categoryFilters);
         Task<RecipeDTO> GetRecipeById(int recipeId);
         Task<IEnumerable<RecipeDTO>> GetUserRecipes(string userId);
-        Task<RecipeDTO> Create(RecipeViewModel model, string userId);
+        Task<RecipeDTO> Create(CreateRecipeViewModel model, string userId);
         Task<RecipeDTO> Update(RecipeDTO model);
-        Task Remove(int id);
-        Task<bool> CheckIfRecipeIsFavorite(string userId, int recipeId);
-        Task<IEnumerable<CategoryFilterViewModel>> GetCategoryFilters(IEnumerable<int> checkedFilters);
-        Task<IEnumerable<CategoryDTO>> GetCategoriesList();
+        Task Remove(int id);  
         Task<bool> RecipeExists(int id);
         Task<bool> RecipeBelongsToCurrentUser(int id, string userId);
     }

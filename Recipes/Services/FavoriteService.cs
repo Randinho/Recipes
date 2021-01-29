@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Recipes.Data;
 using Recipes.DTO;
 using Recipes.Interfaces;
+using Recipes.Interfaces.Repositories;
 using Recipes.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +15,13 @@ namespace Recipes.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IFavoriteRepository _favoriteRepository;
 
-        public FavoriteService(ApplicationDbContext context, IMapper mapper)
+        public FavoriteService(ApplicationDbContext context, IMapper mapper, IFavoriteRepository favoriteRepository)
         {
             _context = context;
             _mapper = mapper;
+            _favoriteRepository = favoriteRepository;
         }
 
         public async Task Add(int recipeId, string userId)
@@ -48,6 +51,13 @@ namespace Recipes.Services
                 _context.Favorites.Remove(favorite);
                 await _context.SaveChangesAsync();
             }
+        }
+        public async Task<bool> IsRecipeFavorite(string userId, int recipeId)
+        {
+            var favorite = await _favoriteRepository.GetFavoriteRecipe(userId, recipeId);
+            if (favorite != null)
+                return true;
+            return false;
         }
     }
 }

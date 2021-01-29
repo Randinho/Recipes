@@ -17,14 +17,20 @@ namespace Recipes.Controllers
     {
         private readonly ILogger<Recipe> _logger;
         private readonly IRecipeService _recipeService;
+        private readonly IFavoriteService _favoriteService;
+        private readonly ICategoryService _categoryService;
 
         public RecipesController(
             ILogger<Recipe> logger,
             UserManager<ApplicationUser> userManager,
-            IRecipeService recipeService) : base(userManager)
+            IRecipeService recipeService,
+            IFavoriteService favoriteService
+            ,ICategoryService categoryService) : base(userManager)
         {
             _logger = logger;
             _recipeService = recipeService;
+            _favoriteService = favoriteService;
+            _categoryService = categoryService;
         }
 
         public async Task<IActionResult> Index(int? pageNumber, string searchString, string currentFilter, List<int> categoryFilters, string currentCategoryFilters)
@@ -32,7 +38,7 @@ namespace Recipes.Controllers
             if (currentCategoryFilters != null)
                 categoryFilters = currentCategoryFilters.Split(",").Select(int.Parse).ToList();
 
-            ViewBag.CategoryFilters = await _recipeService.GetCategoryFilters(categoryFilters);
+            ViewBag.CategoryFilters = await _categoryService.GetCategoryFilters(categoryFilters);
             if (searchString != null)
                 pageNumber = 1;
             else
@@ -51,7 +57,7 @@ namespace Recipes.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var recipe = await _recipeService.GetRecipeById(id);
-            ViewBag.IsFavorite = await _recipeService.CheckIfRecipeIsFavorite(GetCurrentUserId(), id);
+            ViewBag.IsFavorite = await _favoriteService.IsRecipeFavorite(GetCurrentUserId(), id);
 
             if (recipe == null)
                 return NotFound();
@@ -62,13 +68,13 @@ namespace Recipes.Controllers
         [Authorize]
         public async Task<IActionResult> Create()
         {
-            ViewBag.Categories = await _recipeService.GetCategoriesList();
+            ViewBag.Categories = await _categoryService.GetCategoriesList();
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(RecipeViewModel model)
+        public async Task<IActionResult> Create(CreateRecipeViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -88,7 +94,7 @@ namespace Recipes.Controllers
 
             if (await _recipeService.RecipeBelongsToCurrentUser(recipe.Id, GetCurrentUserId()))
             {
-                ViewBag.Categories = await _recipeService.GetCategoriesList();
+                ViewBag.Categories = await _categoryService.GetCategoriesList();
                 return View(recipe);
             }
             else
@@ -104,10 +110,10 @@ namespace Recipes.Controllers
 
             if (ModelState.IsValid)
             {
-                var mappedRecipe = await _recipeService.Update(recipe);
-
                 if (!await _recipeService.RecipeExists(recipe.Id))
                     return NotFound();
+
+                var mappedRecipe = await _recipeService.Update(recipe);
 
                 return RedirectToAction(nameof(Details), new { id = mappedRecipe.Id });
             }
