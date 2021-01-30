@@ -92,7 +92,7 @@ namespace Recipes.Controllers
             if (recipe == null)
                 return NotFound();
 
-            if (await _recipeService.RecipeBelongsToCurrentUser(recipe.Id, GetCurrentUserId()))
+            if (recipe.RecipeBelongsToUser(GetCurrentUserId()))
             {
                 ViewBag.Categories = await _categoryService.GetCategoriesList();
                 return View(recipe);

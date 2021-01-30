@@ -20,5 +20,29 @@ namespace Recipes.Repositories
         {
             return await _context.Favorites.FirstOrDefaultAsync(f => f.ApplicationUserId == userId && f.RecipeId == recipeId);
         }
+        public async Task AddToFavorites(string userId, int recipeId)
+        {
+            await _context.Favorites.AddAsync(new Favorite
+            {
+                ApplicationUserId = userId,
+                RecipeId = recipeId
+            });
+            await _context.SaveChangesAsync();
+        }
+        public async Task<IEnumerable<Favorite>> GetFavoriteList(string userId)
+        {
+            var favoriteRecipes = await _context.Favorites
+               .Include(x => x.Recipe.ApplicationUser)
+               .Include(x => x.Recipe.Category)
+               .Where(x => x.ApplicationUserId == userId).ToListAsync();
+            return favoriteRecipes;
+        }
+        public async Task Remove(Favorite favorite)
+        {
+            _context.Favorites.Remove(favorite);
+            await _context.SaveChangesAsync();
+
+        }
+
     }
 }

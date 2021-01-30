@@ -16,6 +16,7 @@ namespace Recipes.Mappings
             CreateMap<RecipeIngredients, RecipeIngredientsDTO>().ReverseMap();
             CreateMap<Shared, SharedDTO>().ReverseMap();
             CreateMap<Notification, NotificationDTO>().ReverseMap();
+            CreateMap<ApplicationUser, ApplicationUserDTO>().ReverseMap();
 
 
             CreateMap<CreateRecipeViewModel, Recipe>();           

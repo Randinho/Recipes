@@ -53,10 +53,15 @@ namespace Recipes
             services.AddScoped<IIngredientService, IngredientService>();
             services.AddScoped<IFavoriteService, FavoriteService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IUserService, UserService>();
 
             services.AddScoped<IRecipeRepository, RecipeRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IFavoriteRepository, FavoriteRepository>();
+            services.AddScoped<IShareRepository, ShareRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IIngredientRepository, IngredientRepository>();
+            services.AddScoped<INotificationRepository, NotificationRepository>();
 
             services.AddScoped<INotificationSender, NotificationSender>();
             //services.AddMvc();

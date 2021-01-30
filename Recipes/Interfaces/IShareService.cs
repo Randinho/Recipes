@@ -7,6 +7,6 @@ namespace Recipes.Interfaces
     public interface IShareService
     {
         Task<IEnumerable<SharedDTO>> GetSharedRecipesList(string userId);
-        Task<bool> ShareRecipe(int id, string email);
+        Task<bool> ShareRecipe(int id, ApplicationUserDTO user);
     }
 }

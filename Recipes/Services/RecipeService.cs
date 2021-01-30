@@ -78,13 +78,8 @@ namespace Recipes.Services
             await _recipeRepository.Remove(id);
         }
         public async Task<bool> RecipeExists(int id) 
-        { 
-            
-            var recipe = await _recipeRepository.GetRecipeById(id);
-            if (recipe == null)
-                return false;
-            return true;
-            
+        {
+            return await _recipeRepository.RecipeExists(id);
         }
         public async Task<bool> RecipeBelongsToCurrentUser(int id, string userId)
         {

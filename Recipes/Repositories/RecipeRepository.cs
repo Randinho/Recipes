@@ -49,7 +49,7 @@ namespace Recipes.Repositories
         }
         public async Task Update(Recipe recipe)
         {
-            _context.Update(recipe);
+            _context.Recipes.Update(recipe);
             await _context.SaveChangesAsync();
         }
         public async Task Remove(int id)
@@ -58,5 +58,7 @@ namespace Recipes.Repositories
             _context.Remove(recipe);
             await _context.SaveChangesAsync();
         }
+        public async Task<bool> RecipeExists(int id) =>
+            await _context.Recipes.AnyAsync(x => x.Id == id);
     }
 }

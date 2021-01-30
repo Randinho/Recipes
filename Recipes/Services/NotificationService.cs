@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Recipes.Data;
 using Recipes.DTO;
 using Recipes.Interfaces;
+using Recipes.Interfaces.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,39 +12,40 @@ namespace Recipes.Services
 {
     public class NotificationService : INotificationService
     {
-        private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly INotificationRepository _notificationRepository;
 
-        public NotificationService(ApplicationDbContext context, IMapper mapper)
+        public NotificationService(IMapper mapper,
+            INotificationRepository notificationRepository)
         {
-            _context = context;
             _mapper = mapper;
+            _notificationRepository = notificationRepository;
         }
         public async Task<IEnumerable<NotificationDTO>> GetNotificationList(string userId)
         {
-            var notifications = await _context.Notifications.Where(n => n.ReceiverId == userId).ToListAsync();
+            var notifications = await _notificationRepository.GetUserNotifications(userId);
             var mapped = _mapper.Map<NotificationDTO[]>(notifications);
             return mapped;
         }
         public async Task SetNotificationsReceived(int? id, string userId)
         {
             if (id != null)
-                _context.Notifications.FirstOrDefault(x => x.Id == id).IsReceived = true;
+            {
+                var notification = await _notificationRepository.GetNotificationById((int)id);
+                await _notificationRepository.SetReceived(notification);
+            }   
             else
             {
-                var notifications = await _context.Notifications.Where(x => x.ReceiverId == userId && x.IsReceived == false).ToListAsync();
+                var notifications = await _notificationRepository.GetAllNotReceivedNotifications(userId);
                 foreach (var item in notifications)
                 {
-                    item.IsReceived = true;
-                    _context.Notifications.Update(item);
+                    await _notificationRepository.SetReceived(item);
                 }
             }
-            await _context.SaveChangesAsync();
-
         }
-
-        public async Task<bool> AnyNotReceivedNotification(string userId) =>
-            await _context.Notifications.AnyAsync(x => x.ReceiverId == userId && x.IsReceived == false);
+        public async Task<bool> AnyNotReceivedNotification(string userId) => 
+            await _notificationRepository.AnyNotReceivedNotification(userId);
+            
 
 
 

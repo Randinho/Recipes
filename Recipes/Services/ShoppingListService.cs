@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using QRCoder;
-using Recipes.Data;
+﻿using QRCoder;
 using Recipes.DTO;
 using Recipes.Interfaces;
 using Recipes.ViewModels;
@@ -14,15 +12,6 @@ namespace Recipes.Services
 {
     public class ShoppingListService : IShoppingListService
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IMapper _mapper;
-
-        public ShoppingListService(ApplicationDbContext context, IMapper mapper)
-        {
-            _context = context;
-            _mapper = mapper;
-        }
-
         public IEnumerable<ShoppingListItemViewModel> GetShoppingListItems(RecipeDTO recipe)
         {
             List<ShoppingListItemViewModel> shoppingList = new List<ShoppingListItemViewModel>();

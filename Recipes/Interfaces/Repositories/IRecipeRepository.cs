@@ -13,6 +13,7 @@ namespace Recipes.Interfaces.Repositories
         Task<IEnumerable<Recipe>> GetUserRecipes(string userId);
         Task Create(Recipe recipe);
         Task Update(Recipe recipe);
-        Task Remove(int id);   
+        Task Remove(int id);
+        Task<bool> RecipeExists(int id);
     }
 }

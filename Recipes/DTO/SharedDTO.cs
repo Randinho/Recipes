@@ -9,7 +9,7 @@ namespace Recipes.DTO
         public RecipeDTO Recipe { get; set; }
         public string ApplicationUserId { get; set; }
         [Display(Name = "Shared by")]
-        public ApplicationUser ApplicationUser { get; set; }
+        public ApplicationUserDTO ApplicationUser { get; set; }
         public bool Confirmed { get; set; }
     }
 }
