@@ -1,5 +1,8 @@
-1. [About](#about)
-2. [Technologies](#technologies)
+# Getting Started
+
+<ul>
+  <li> [Getting Started] </li>
+  </ul>
 
 # About
 <p>
