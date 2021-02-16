@@ -12,11 +12,14 @@ namespace Recipes.Controllers
     public class ShareController : BaseController
     {
         private readonly IShareService _shareService;
+        private readonly IUserService _userService;
 
         public ShareController(UserManager<ApplicationUser> userManager,
-            IShareService shareService) : base(userManager)
+            IShareService shareService,
+            IUserService userService) : base(userManager)
         {
             _shareService = shareService;
+            _userService = userService;
         }
 
         public async Task<IActionResult> Index(int? pageNumber)
@@ -35,12 +38,19 @@ namespace Recipes.Controllers
         [HttpPost]
         public async Task<IActionResult> Share(int id, string email)
         {
+            string message;
+            var user = await _userService.CheckIfUserExists(email);
+            if (user == null)
+            {
+                message = "User with this email does not exist.";
+                return RedirectToAction("PermissionDenied", "Home", new { message });
+            }
 
-            if (await _shareService.ShareRecipe(id, email))
+            if (await _shareService.ShareRecipe(id, user))
                 return RedirectToAction("UserRecipes", "Recipes");
             else
             {
-                string message = "That recipe is already shared to chosen user.";
+                message = "That recipe is already shared to chosen user.";
                 return RedirectToAction("PermissionDenied", "Home", new { message });
             }
         }

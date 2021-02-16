@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Recipes.Data;
 using Recipes.DTO;
 using Recipes.Interfaces;
+using Recipes.Interfaces.Repositories;
 using Recipes.Models;
 using Recipes.ViewModels;
 using System;
@@ -16,23 +17,21 @@ namespace Recipes.Services
 {
     public class RecipeService : IRecipeService
     {
-        private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _hostEnvironment;
-        public RecipeService(ApplicationDbContext dbContext,
-            IMapper mapper,
-            IWebHostEnvironment hostEnvironment)
+        private readonly IRecipeRepository _recipeRepository;
+   
+        public RecipeService(IMapper mapper,
+            IWebHostEnvironment hostEnvironment,
+            IRecipeRepository recipeRepository)
         {
-            _context = dbContext;
             _mapper = mapper;
             _hostEnvironment = hostEnvironment;
+            _recipeRepository = recipeRepository;
         }
         public async Task<IEnumerable<RecipeDTO>> GetRecipesList(string searchString, List<int> categoryFilters)
         {
-            var recipes = await _context.Recipes
-                .Include(r => r.Category)
-                .Include(r => r.ApplicationUser)
-                .Where(r => r.IsPrivate == false).ToListAsync();
+            var recipes = await _recipeRepository.GetRecipeList();
 
             if (!string.IsNullOrEmpty(searchString))
                 recipes = recipes.Where(r => r.Name.Contains(searchString) || r.Description.Contains(searchString)).ToList();
@@ -45,31 +44,23 @@ namespace Recipes.Services
         }
         public async Task<RecipeDTO> GetRecipeById(int recipeId)
         {
-            var recipe = await _context.Recipes
-                .Include(r => r.Category)
-                .Include(r => r.ApplicationUser)
-                .Include(r => r.RecipeIngredients)
-                .ThenInclude(x => x.Ingredient)
-                .FirstOrDefaultAsync(r => r.Id == recipeId);
+            var recipe = await _recipeRepository.GetRecipeById(recipeId);
             var mapped = _mapper.Map<RecipeDTO>(recipe);
             return mapped;
         }
         public async Task<IEnumerable<RecipeDTO>> GetUserRecipes(string userId)
         {
-            var recipes = await _context.Recipes
-                .Include(r => r.Category)
-                .Where(r => r.ApplicationUserId == userId).ToListAsync();
+            var recipes = await _recipeRepository.GetUserRecipes(userId);
             var mapped = _mapper.Map<RecipeDTO[]>(recipes);
             return mapped;
         }
-        public async Task<RecipeDTO> Create(RecipeViewModel model, string userId)
+        public async Task<RecipeDTO> Create(CreateRecipeViewModel model, string userId)
         {
             var recipe = _mapper.Map<Recipe>(model);
             recipe.Picture = UploadFile(model);
             recipe.ApplicationUserId = userId;
 
-            await _context.Recipes.AddAsync(recipe);
-            await _context.SaveChangesAsync();
+            await _recipeRepository.Create(recipe);
 
             var mapped = _mapper.Map<RecipeDTO>(recipe);
             return mapped;
@@ -77,57 +68,27 @@ namespace Recipes.Services
         public async Task<RecipeDTO> Update(RecipeDTO model)
         {
             var recipe = _mapper.Map<Recipe>(model);
-            _context.Update(recipe);
-            await _context.SaveChangesAsync();
+            await _recipeRepository.Update(recipe);
 
             var mapped = _mapper.Map<RecipeDTO>(recipe);
             return mapped;
         }
         public async Task Remove(int id)
         {
-            var recipe = await _context.Recipes.FirstOrDefaultAsync(r => r.Id == id);
-            _context.Remove(recipe);
-            await _context.SaveChangesAsync();
+            await _recipeRepository.Remove(id);
         }
-        public async Task<IEnumerable<CategoryFilterViewModel>> GetCategoryFilters(IEnumerable<int> checkedFilters)
+        public async Task<bool> RecipeExists(int id) 
         {
-            var categories = await _context.Categories.ToListAsync();
-            var filters = new List<CategoryFilterViewModel>();
-            foreach (var item in categories)
-            {
-                var filter = new CategoryFilterViewModel
-                {
-                    Name = item.Name,
-                    Id = item.Id
-                };
-                filter.IsChecked = checkedFilters.Contains(item.Id);
-                filters.Add(filter);
-            }
-            return filters;
+            return await _recipeRepository.RecipeExists(id);
         }
-        public async Task<IEnumerable<CategoryDTO>> GetCategoriesList()
-        {
-            var categories = await _context.Categories.ToListAsync();
-            var mapped = _mapper.Map<CategoryDTO[]>(categories);
-            return mapped;
-        }
-        public async Task<bool> CheckIfRecipeIsFavorite(string userId, int recipeId)
-        {
-            var favorite = await _context.Favorites
-                .FirstOrDefaultAsync(x => x.ApplicationUserId == userId && x.RecipeId == recipeId);
-            if (favorite != null)
-                return true;
-            return false;
-        }
-        public async Task<bool> RecipeExists(int id) => await _context.Recipes.AnyAsync(r => r.Id == id);
         public async Task<bool> RecipeBelongsToCurrentUser(int id, string userId)
         {
-            var recipe = await _context.Recipes.FirstOrDefaultAsync(r => r.Id == id);
+            var recipe = await _recipeRepository.GetRecipeById(id);
             if (recipe.ApplicationUserId == userId)
                 return true;
             return false;
         }
-        private string UploadFile(RecipeViewModel model)
+        private string UploadFile(CreateRecipeViewModel model)
         {
             string uniqueFileName = null;
 

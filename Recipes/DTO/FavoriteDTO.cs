@@ -7,7 +7,7 @@ namespace Recipes.DTO
     {
         public string ApplicationUserId { get; set; }
         [Display(Name = "Created by")]
-        public ApplicationUser ApplicationUser { get; set; }
+        public ApplicationUserDTO ApplicationUser { get; set; }
         public int RecipeId { get; set; }
         public RecipeDTO Recipe { get; set; }
     }

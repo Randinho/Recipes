@@ -13,7 +13,7 @@ namespace Recipes.DTO
 
         [Required]
         public DateTime Date { get; set; }
-        public ApplicationUser Receiver { get; set; }
+        public ApplicationUserDTO Receiver { get; set; }
         public string ReceiverId { get; set; }
         public bool IsReceived { get; set; }
     }

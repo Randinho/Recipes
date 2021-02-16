@@ -9,7 +9,7 @@ namespace Recipes.Interfaces
 {
     public interface ICategoryService
     {
-        Task<IEnumerable<CategoryFilterViewModel>> GetCategoryFilters(IEnumerable<int> checkedFitlers);
-        Task<IEnumerable<CategoryDTO>> GetCategoryList();
+        Task<IEnumerable<CategoryFilterViewModel>> GetCategoryFilters(IEnumerable<int> checkedFilters);
+        Task<IEnumerable<CategoryDTO>> GetCategoriesList();
     }
 }

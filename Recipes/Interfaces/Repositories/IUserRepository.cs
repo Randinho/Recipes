@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Recipes.Interfaces
+namespace Recipes.Interfaces.Repositories
 {
-    public interface IUserService
+    public interface IUserRepository
     {
-        Task<ApplicationUserDTO> CheckIfUserExists(string email);
+        Task<ApplicationUser> GetUserByEmail(string email);
     }
 }

@@ -9,18 +9,17 @@ namespace Recipes.Mappings
     {
         public MappingProfile()
         {
-            CreateMap<Recipe, RecipeDTO>();
-            CreateMap<Category, CategoryDTO>();
-            CreateMap<Favorite, FavoriteDTO>();
-            CreateMap<Ingredient, IngredientDTO>();
-            CreateMap<RecipeIngredients, RecipeIngredientsDTO>();
-            CreateMap<Shared, SharedDTO>();
-            CreateMap<Notification, NotificationDTO>();
+            CreateMap<Recipe, RecipeDTO>().ReverseMap();
+            CreateMap<Category, CategoryDTO>().ReverseMap();
+            CreateMap<Favorite, FavoriteDTO>().ReverseMap();
+            CreateMap<Ingredient, IngredientDTO>().ReverseMap();
+            CreateMap<RecipeIngredients, RecipeIngredientsDTO>().ReverseMap();
+            CreateMap<Shared, SharedDTO>().ReverseMap();
+            CreateMap<Notification, NotificationDTO>().ReverseMap();
+            CreateMap<ApplicationUser, ApplicationUserDTO>().ReverseMap();
 
-            CreateMap<RecipeDTO, Recipe>();
-            CreateMap<CategoryDTO, Category>();
 
-            CreateMap<RecipeViewModel, Recipe>();
+            CreateMap<CreateRecipeViewModel, Recipe>();           
         }
     }
 }

@@ -6,16 +6,24 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>@Model.Name</h1>
-
-<div>
-    <h3>@Model.Category.Name</h3>
-    <hr /> 
-    <h5>Created by: @Model.ApplicationUser.Email</h5>
-    <div class="row">
+    <div class="row">      
+        <div class="col-sm">
+            <h1>@Model.Name</h1>
+            <h3>@Model.Category.Name</h3>
+            <h5>Created by: @Model.ApplicationUser.Email</h5>
+        </div>
         <div class="col-sm">
             <img src="~/images/@Model.Picture" class="img-thumbnail rounded float-sm-left" height="300" width="300" alt="recipePic" asp-append-version="true" />
+
         </div>
+    </div>
+    <hr /> 
+    <div class="row">
+        <div class="col-sm-6">
+            <h3>Preparation:</h3>
+            <p style="white-space: pre-line">@Model.Description</p>
+
+</div>
         <div class="col-sm-6">
             <h3>Ingredients:</h3>
             @foreach(var item in Model.RecipeIngredients)
@@ -25,12 +33,7 @@
         </div>
     </div>  
     <hr />
-    <div class="row">
-        <div class="col-sm" style="white-space: pre-line">
-            @Model.Description
-        </div>  
-    </div>
-</div>
+
 
 <div>
     @if (SignInManager.IsSignedIn(User))

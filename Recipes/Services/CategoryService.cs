@@ -1,4 +1,7 @@
-﻿using Recipes.Interfaces;
+﻿using AutoMapper;
+using Recipes.DTO;
+using Recipes.Interfaces;
+using Recipes.Interfaces.Repositories;
 using Recipes.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -13,16 +16,23 @@ namespace Recipes.Services
 {
     public class CategoryService : ICategoryService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
-        public CategoryService(ApplicationDbContext context, IMapper mapper)
+        public CategoryService(ICategoryRepository categoryRepository, IMapper mapper)
         {
-            _context = context;
+            _categoryRepository = categoryRepository;
             _mapper = mapper;
         }
+        public async Task<IEnumerable<CategoryDTO>> GetCategoriesList()
+        {
+            var categories = await _categoryRepository.GetCategoryList();
+            var mapped = _mapper.Map<CategoryDTO[]>(categories);
+            return mapped;
+        }
+
         public async Task<IEnumerable<CategoryFilterViewModel>> GetCategoryFilters(IEnumerable<int> checkedFilters)
         {
-            var categories = await _context.Categories.ToListAsync();
+            var categories = await _categoryRepository.GetCategoryList();
             var filters = new List<CategoryFilterViewModel>();
             foreach (var item in categories)
             {

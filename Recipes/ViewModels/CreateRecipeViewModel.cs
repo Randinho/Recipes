@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Recipes.ViewModels
 {
-    public class RecipeViewModel
+    public class CreateRecipeViewModel
     {
         //public int Id { get; set; }
         [Required]

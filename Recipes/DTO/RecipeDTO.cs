@@ -20,7 +20,7 @@ namespace Recipes.DTO
 
         public bool IsPrivate { get; set; }
         public string Picture { get; set; }
-        public ApplicationUser ApplicationUser { get; set; }
+        public ApplicationUserDTO ApplicationUser { get; set; }
         public string ApplicationUserId { get; set; }
         public CategoryDTO Category { get; set; }
         public int CategoryId { get; set; }
@@ -34,6 +34,12 @@ namespace Recipes.DTO
             Favorites = new Collection<FavoriteDTO>();
             RecipeIngredients = new Collection<RecipeIngredientsDTO>();
             Shared = new Collection<SharedDTO>();
+        }
+        public bool RecipeBelongsToUser(string userId)
+        {
+            if (ApplicationUserId == userId)
+                return true;
+            return false;
         }
     }
 }
