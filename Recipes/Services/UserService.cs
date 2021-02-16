@@ -6,18 +6,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using Recipes.Data;
 using Recipes.Interfaces.Repositories;
-using Recipes.Models;
 using Recipes.DTO;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace Recipes.Services
 {
     public class UserService : IUserService
     {
+        private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
+        public UserService(IUserRepository userRepository, IMapper mapper)
         {
+            _userRepository = userRepository;
+            _mapper = mapper;
         }
-        public async Task<bool> CheckIfUserExists(string email) =>
-            await _context.ApplicationUsers.AnyAsync(p => p.Email== email);
 
         public async Task<ApplicationUserDTO> CheckIfUserExists(string email)
         {

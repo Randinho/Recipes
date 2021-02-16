@@ -9,8 +9,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Recipes.Data;
 using Microsoft.EntityFrameworkCore;
-using Recipes.DTO;
-using AutoMapper;
 
 namespace Recipes.Services
 {
@@ -45,12 +43,6 @@ namespace Recipes.Services
                 filters.Add(filter);
             }
             return filters;
-        }
-        public async Task<IEnumerable<CategoryDTO>> GetCategoryList()
-        {
-            var categories = await _context.Categories.ToListAsync();
-            var mapped = _mapper.Map<CategoryDTO[]>(categories);
-            return mapped;
         }
     }
 }
