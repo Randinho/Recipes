@@ -1,9 +1,12 @@
-<b> About </b>
+1. [About](#about)
+2. [Technologies](#technologies)
+
+# About
 <p>
 Web application that allows user to store culinary recipes, publish them or share private recipes with other users. Preview of public recipe and generating QR Code with the list of ingredients needed are accessible for everyone, but logged user can add recipes to favorites etc.
 </p>
 
-<b> Technologies </b>
+# Technologies
 <ul>
   <li> ASP.NET Core MVC </li>
   <li> SQL Server </li>
