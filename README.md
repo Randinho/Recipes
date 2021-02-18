@@ -3,7 +3,7 @@
  * [Table Of Contents](#table-of-contents)
  * [About](#about)
  * [Technologies](#technologies)
- * [Presentation](#presentation)
+ * [Functionalities](#some-functionalities-presentation)
 
 
 # About
@@ -23,7 +23,16 @@ Web application that allows user to store culinary recipes, publish them or shar
   <li> Basic front-end with Bootstrap, HTML, CSS, JS </li>
 </ul>
 
-# Presentation
+# Some functionalities presentation
 
 ## List of recipes
 ![Alt](https://i.ibb.co/nMj1NYC/img1.png)
+
+## Filter by category
+![Filtered](https://i.ibb.co/2sj2WdD/img2.png)
+
+## Details of recipe
+![Details](https://i.ibb.co/NSGn5Kh/img4.png)
+
+
+ 
